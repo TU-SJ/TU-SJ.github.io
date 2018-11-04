@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="Hexo, NexT">
+  <meta name="keywords" content="PHP,文件包含,">
 
 
 
@@ -81,13 +81,21 @@
 
 
 
-<meta property="og:type" content="website">
-<meta property="og:title" content="tusk1&#39;Blog">
-<meta property="og:url" content="http://yoursite.com/index.html">
+<meta name="description" content="0x01 基本原理服务端执行用户能控制的脚本或代码，主要有本地文件包含和远程文件包含两种。   常见包含函数有：include()、require()include()是当代码执行到它的时候才加载文件,发生错误的时候只是给一个警告,然后继续往下执行require()是只要程序一执行就会立即调用文件,发生错误的时候会输出错误信息,并且终止脚本的运行require()一般是用于文件头包含类文件、数据库">
+<meta name="keywords" content="PHP,文件包含">
+<meta property="og:type" content="article">
+<meta property="og:title" content="文件包含漏洞总结">
+<meta property="og:url" content="http://yoursite.com/2018/11/04/文件包含漏洞总结/index.html">
 <meta property="og:site_name" content="tusk1&#39;Blog">
+<meta property="og:description" content="0x01 基本原理服务端执行用户能控制的脚本或代码，主要有本地文件包含和远程文件包含两种。   常见包含函数有：include()、require()include()是当代码执行到它的时候才加载文件,发生错误的时候只是给一个警告,然后继续往下执行require()是只要程序一执行就会立即调用文件,发生错误的时候会输出错误信息,并且终止脚本的运行require()一般是用于文件头包含类文件、数据库">
 <meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://yoursite.com/2018/11/04/文件包含漏洞总结/1.png">
+<meta property="og:image" content="http://yoursite.com/2018/11/04/文件包含漏洞总结/2.png">
+<meta property="og:updated_time" content="2018-11-04T15:26:23.067Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="tusk1&#39;Blog">
+<meta name="twitter:title" content="文件包含漏洞总结">
+<meta name="twitter:description" content="0x01 基本原理服务端执行用户能控制的脚本或代码，主要有本地文件包含和远程文件包含两种。   常见包含函数有：include()、require()include()是当代码执行到它的时候才加载文件,发生错误的时候只是给一个警告,然后继续往下执行require()是只要程序一执行就会立即调用文件,发生错误的时候会输出错误信息,并且终止脚本的运行require()一般是用于文件头包含类文件、数据库">
+<meta name="twitter:image" content="http://yoursite.com/2018/11/04/文件包含漏洞总结/1.png">
 
 
 
@@ -117,13 +125,13 @@
 
 
 
-  <link rel="canonical" href="http://yoursite.com/">
+  <link rel="canonical" href="http://yoursite.com/2018/11/04/文件包含漏洞总结/">
 
 
 
 
 
-  <title>tusk1'Blog</title>
+  <title>文件包含漏洞总结 | tusk1'Blog</title>
   
 
 
@@ -142,8 +150,7 @@
     
   
 
-  <div class="container sidebar-position-left 
-  page-home">
+  <div class="container sidebar-position-left page-post-detail">
     <div class="headband"></div>
 
     <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
@@ -246,9 +253,9 @@
         <div class="content-wrap">
           <div id="content" class="content">
             
-  <section id="posts" class="posts-expand">
+
+  <div id="posts" class="posts-expand">
     
-      
 
   
 
@@ -278,9 +285,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/11/04/文件包含漏洞总结/" itemprop="url">文件包含漏洞总结</a></h1>
+          <h1 class="post-title" itemprop="name headline">文件包含漏洞总结</h1>
         
 
         <div class="post-meta">
@@ -352,9 +357,7 @@
       
 
       
-        
-          
-            <h3 id="0x01-基本原理"><a href="#0x01-基本原理" class="headerlink" title="0x01 基本原理"></a>0x01 基本原理</h3><p>服务端执行用户能控制的脚本或代码，主要有本地文件包含和远程文件包含两种。  </p>
+        <h3 id="0x01-基本原理"><a href="#0x01-基本原理" class="headerlink" title="0x01 基本原理"></a>0x01 基本原理</h3><p>服务端执行用户能控制的脚本或代码，主要有本地文件包含和远程文件包含两种。  </p>
 <p>常见包含函数有：include()、require()<br>include()是当代码执行到它的时候才加载文件,发生错误的时候只是给一个警告,然后继续往下执行<br>require()是只要程序一执行就会立即调用文件,发生错误的时候会输出错误信息,并且终止脚本的运行<br>require()一般是用于文件头包含类文件、数据库等等文件,include一般是用于包含html模版文件<br>include_once()、require_once()与(include\require)的功能相同,只是区别于当重复调用的时候，它只会调用一次。 </p>
 <p><strong>无论文件的后缀是什么，只要内容符合php语法，任何扩展名都可以被php解析。</strong>  </p>
 <h3 id="0x02-本地文件包含"><a href="#0x02-本地文件包含" class="headerlink" title="0x02 本地文件包含"></a>0x02 本地文件包含</h3><p>payload:?f=../flag.txt<br>./当前目录<br>../上一级目录,这样的遍历目录来读取文件<br>加多个../可保证到达根目录  </p>
@@ -379,8 +382,6 @@
 <p>phar协议:<a href="http://php.net/manual/zh/wrappers.phar.php" target="_blank" rel="noopener">http://php.net/manual/zh/wrappers.phar.php</a><br>自5.30起生效<br>参考:<br><a href="https://bl4ck.in/tricks/2015/06/10/zip%E6%88%96phar%E5%8D%8F%E8%AE%AE%E5%8C%85%E5%90%AB%E6%96%87%E4%BB%B6.html" target="_blank" rel="noopener">https://bl4ck.in/tricks/2015/06/10/zip%E6%88%96phar%E5%8D%8F%E8%AE%AE%E5%8C%85%E5%90%AB%E6%96%87%E4%BB%B6.html</a></p>
 <h3 id="0x06-参考"><a href="#0x06-参考" class="headerlink" title="0x06 参考"></a>0x06 参考</h3><p><a href="http://www.cnblogs.com/iamstudy/articles/include_file.html" target="_blank" rel="noopener">http://www.cnblogs.com/iamstudy/articles/include_file.html</a><br><a href="http://www.freebuf.com/articles/web/119150.html" target="_blank" rel="noopener">http://www.freebuf.com/articles/web/119150.html</a><br><a href="https://blog.csdn.net/qq_33020901/article/details/78706764" target="_blank" rel="noopener">https://blog.csdn.net/qq_33020901/article/details/78706764</a><br><a href="https://www.liuxianglai.top/?p=145" target="_blank" rel="noopener">https://www.liuxianglai.top/?p=145</a><br><a href="http://blog.51cto.com/tdcqvip/1958654" target="_blank" rel="noopener">http://blog.51cto.com/tdcqvip/1958654</a><br><a href="https://www.freebuf.com/column/148886.html" target="_blank" rel="noopener">https://www.freebuf.com/column/148886.html</a><br><a href="https://www.cnblogs.com/iamstudy/category/729449.html" target="_blank" rel="noopener">https://www.cnblogs.com/iamstudy/category/729449.html</a></p>
 
-          
-        
       
     </div>
     
@@ -395,142 +396,38 @@
 
     <footer class="post-footer">
       
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/11/03/hello-world/">
-
-    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="tusk1">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="tusk1'Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/11/03/hello-world/" itemprop="url">Hello World</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-11-03T01:49:33+08:00">
-                2018-11-03
-              </time>
-            
-
-            
-
-            
-          </span>
-
+        <div class="post-tags">
           
-
+            <a href="/tags/PHP/" rel="tag"># PHP</a>
           
-            
+            <a href="/tags/文件包含/" rel="tag"># 文件包含</a>
           
-
-          
-          
-
-          
-
-          
-
-          
-
         </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>Welcome to <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/" target="_blank" rel="noopener">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html" target="_blank" rel="noopener">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues" target="_blank" rel="noopener">GitHub</a>.</p>
-<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">"My New Post"</span></span><br></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/writing.html" target="_blank" rel="noopener">Writing</a></p>
-<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/server.html" target="_blank" rel="noopener">Server</a></p>
-<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/generating.html" target="_blank" rel="noopener">Generating</a></p>
-<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/deployment.html" target="_blank" rel="noopener">Deployment</a></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
       
 
       
       
-        <div class="post-eof"></div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/11/03/hello-world/" rel="next" title="Hello World">
+                <i class="fa fa-chevron-left"></i> Hello World
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
       
     </footer>
   </div>
@@ -540,10 +437,11 @@
   </article>
 
 
-    
-  </section>
 
-  
+    <div class="post-spread">
+      
+    </div>
+  </div>
 
 
           </div>
@@ -551,6 +449,10 @@
 
 
           
+
+  
+
+
 
         </div>
         
@@ -571,8 +473,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
 
-      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
+      <section class="site-overview-wrap sidebar-panel">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
             
@@ -657,6 +568,22 @@
         </div>
       </section>
 
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#0x01-基本原理"><span class="nav-number">1.</span> <span class="nav-text">0x01 基本原理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#0x02-本地文件包含"><span class="nav-number">2.</span> <span class="nav-text">0x02 本地文件包含</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#0x03-远程文件包含"><span class="nav-number">3.</span> <span class="nav-text">0x03 远程文件包含</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#0x4-利用php流php-filter"><span class="nav-number">4.</span> <span class="nav-text">0x4 利用php流php://filter</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#0x05-利用php流input-post方式发送"><span class="nav-number">5.</span> <span class="nav-text">0x05 利用php流input(post方式发送)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#0x06-利用data-urls"><span class="nav-number">6.</span> <span class="nav-text">0x06 利用data urls</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#0x07-绕过"><span class="nav-number">7.</span> <span class="nav-text">0x07 绕过</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#00截断"><span class="nav-number">7.0.1.</span> <span class="nav-text">%00截断</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#绕过"><span class="nav-number">7.0.2.</span> <span class="nav-text">? 绕过</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#文件路径截断"><span class="nav-number">7.0.3.</span> <span class="nav-text">文件路径截断</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#不包含数字和字母的payload"><span class="nav-number">7.0.4.</span> <span class="nav-text">不包含数字和字母的payload</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#其他文件协议"><span class="nav-number">7.0.5.</span> <span class="nav-text">其他文件协议</span></a></li></ol></li></ol><li class="nav-item nav-level-3"><a class="nav-link" href="#0x06-参考"><span class="nav-number">8.</span> <span class="nav-text">0x06 参考</span></a></li></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
       
 
       
@@ -797,6 +724,10 @@
   
 
   
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
 
   
 
