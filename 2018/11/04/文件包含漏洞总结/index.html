@@ -91,7 +91,7 @@
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://yoursite.com/2018/11/04/文件包含漏洞总结/1.png">
 <meta property="og:image" content="http://yoursite.com/2018/11/04/文件包含漏洞总结/2.png">
-<meta property="og:updated_time" content="2018-11-04T15:26:23.067Z">
+<meta property="og:updated_time" content="2018-12-05T13:13:35.407Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="文件包含漏洞总结">
 <meta name="twitter:description" content="0x01 基本原理服务端执行用户能控制的脚本或代码，主要有本地文件包含和远程文件包含两种。   常见包含函数有：include()、require()include()是当代码执行到它的时候才加载文件,发生错误的时候只是给一个警告,然后继续往下执行require()是只要程序一执行就会立即调用文件,发生错误的时候会输出错误信息,并且终止脚本的运行require()一般是用于文件头包含类文件、数据库">
@@ -360,7 +360,7 @@
         <h3 id="0x01-基本原理"><a href="#0x01-基本原理" class="headerlink" title="0x01 基本原理"></a>0x01 基本原理</h3><p>服务端执行用户能控制的脚本或代码，主要有本地文件包含和远程文件包含两种。  </p>
 <p>常见包含函数有：include()、require()<br>include()是当代码执行到它的时候才加载文件,发生错误的时候只是给一个警告,然后继续往下执行<br>require()是只要程序一执行就会立即调用文件,发生错误的时候会输出错误信息,并且终止脚本的运行<br>require()一般是用于文件头包含类文件、数据库等等文件,include一般是用于包含html模版文件<br>include_once()、require_once()与(include\require)的功能相同,只是区别于当重复调用的时候，它只会调用一次。 </p>
 <p><strong>无论文件的后缀是什么，只要内容符合php语法，任何扩展名都可以被php解析。</strong>  </p>
-<h3 id="0x02-本地文件包含"><a href="#0x02-本地文件包含" class="headerlink" title="0x02 本地文件包含"></a>0x02 本地文件包含</h3><p>payload:?f=../flag.txt<br>./当前目录<br>../上一级目录,这样的遍历目录来读取文件<br>加多个../可保证到达根目录  </p>
+<h3 id="0x02-本地文件包含"><a href="#0x02-本地文件包含" class="headerlink" title="0x02 本地文件包含"></a>0x02 本地文件包含</h3><p>payload:?f=../flag.txt<br>./当前目录<br>../上一级目录,这样的遍历目录来读取文件<br>加多个../可保证到达根目录<br>可以使用file协议绕过对 ../ 的过滤  </p>
 <h3 id="0x03-远程文件包含"><a href="#0x03-远程文件包含" class="headerlink" title="0x03 远程文件包含"></a>0x03 远程文件包含</h3><p>将恶意脚本提前放在远程服务器上，payload:?f=[http:]//xxx.xxx.xxx/xxx.txt<br>适用情况：allow_url_fopen=On &amp;&amp; allow_url_include=On (可通过phpinfo获得)  </p>
 <h3 id="0x4-利用php流php-filter"><a href="#0x4-利用php流php-filter" class="headerlink" title="0x4 利用php流php://filter"></a>0x4 利用php流php://filter</h3><p><strong>参数</strong></p>
 <ul>
@@ -504,7 +504,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">6</span>
+                  <span class="site-state-item-count">7</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -602,7 +602,7 @@
 
     <footer id="footer" class="footer">
       <div class="footer-inner">
-        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+        <div class="copyright">&copy; 2018 &mdash; <span itemprop="copyrightYear">2019</span>
   <span class="with-love">
     <i class="fa fa-user"></i>
   </span>

