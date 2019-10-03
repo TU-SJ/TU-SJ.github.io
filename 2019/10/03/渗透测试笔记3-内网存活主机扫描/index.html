@@ -1,0 +1,890 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="metasploit,内网渗透,">
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="tusk1'Blog" type="application/atom+xml">
+
+
+
+
+
+
+<meta name="description" content="基于UDP简介UDP（User Datagram Protocol）是一种无连接的协议，在第四层-传输层，处于IP协议的 上一层。UDP有不提供数据包分组、组装和不能对数据包进行排序的缺点，也就是说，当报 文发送之后，是无法得知其是否安全完整到达的。 UDP特性：1.UDP 缺乏可靠性。UDP 本身不提供确认，超时重传等机制。UDP 数据报可能在网络中被复制，被重新排序，也不保证每个数据报只到达一">
+<meta name="keywords" content="metasploit,内网渗透">
+<meta property="og:type" content="article">
+<meta property="og:title" content="渗透测试笔记3-内网存活主机扫描">
+<meta property="og:url" content="http://yoursite.com/2019/10/03/渗透测试笔记3-内网存活主机扫描/index.html">
+<meta property="og:site_name" content="tusk1&#39;Blog">
+<meta property="og:description" content="基于UDP简介UDP（User Datagram Protocol）是一种无连接的协议，在第四层-传输层，处于IP协议的 上一层。UDP有不提供数据包分组、组装和不能对数据包进行排序的缺点，也就是说，当报 文发送之后，是无法得知其是否安全完整到达的。 UDP特性：1.UDP 缺乏可靠性。UDP 本身不提供确认，超时重传等机制。UDP 数据报可能在网络中被复制，被重新排序，也不保证每个数据报只到达一">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2019-10-03T08:41:00.974Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="渗透测试笔记3-内网存活主机扫描">
+<meta name="twitter:description" content="基于UDP简介UDP（User Datagram Protocol）是一种无连接的协议，在第四层-传输层，处于IP协议的 上一层。UDP有不提供数据包分组、组装和不能对数据包进行排序的缺点，也就是说，当报 文发送之后，是无法得知其是否安全完整到达的。 UDP特性：1.UDP 缺乏可靠性。UDP 本身不提供确认，超时重传等机制。UDP 数据报可能在网络中被复制，被重新排序，也不保证每个数据报只到达一">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2019/10/03/渗透测试笔记3-内网存活主机扫描/">
+
+
+
+
+
+  <title>渗透测试笔记3-内网存活主机扫描 | tusk1'Blog</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">tusk1'Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/10/03/渗透测试笔记3-内网存活主机扫描/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="tusk1">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="tusk1'Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">渗透测试笔记3-内网存活主机扫描</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-10-03T16:32:44+08:00">
+                2019-10-03
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+                  <a href="/categories/渗透测试/" itemprop="url" rel="index">
+                    <span itemprop="name">渗透测试</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="基于UDP"><a href="#基于UDP" class="headerlink" title="基于UDP"></a>基于UDP</h2><h3 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h3><p>UDP（User Datagram Protocol）是一种无连接的协议，在第四层-传输层，处于IP协议的 上一层。UDP有不提供数据包分组、组装和不能对数据包进行排序的缺点，也就是说，当报 文发送之后，是无法得知其是否安全完整到达的。</p>
+<p>UDP特性：<br>1.UDP 缺乏可靠性。UDP 本身不提供确认，超时重传等机制。UDP 数据报可能在网络中被复制，被重新排序，也不保证每个数据报只到达一次。<br>2.UDP 数据报是有长度的。每个UDP数据报都有长度，如果一个数据报正确地到达目的 地，那么该数据报的长度将随数据一起传递给接收方。而TCP是一个字节流协议，没有任 何（协议上的）记录边界。<br>3.UDP是无连接的。UDP 客户和服务器之前不必存在长期的关系。大多数的UDP实现中都 选择忽略源站抑制差错，在网络拥塞时，目的端无法接收到大量的UDP数据报<br>4.UDP支持多播和广播</p>
+<h3 id="namp扫描"><a href="#namp扫描" class="headerlink" title="namp扫描"></a>namp扫描</h3><blockquote>
+<blockquote>
+<p>nmap -sU -T5 -sV –max-retries 1 192.168.1.100 -p 500 </p>
+</blockquote>
+</blockquote>
+<p>缺点：速度超慢</p>
+<h3 id="msf扫描"><a href="#msf扫描" class="headerlink" title="msf扫描"></a>msf扫描</h3><blockquote>
+<blockquote>
+<p>msf&gt;use auxiliary/scanner/discovery/udp_probe<br>msf &gt; use auxiliary/scanner/discovery/udp_sweep</p>
+</blockquote>
+</blockquote>
+<h3 id="unicornscan扫描"><a href="#unicornscan扫描" class="headerlink" title="unicornscan扫描"></a>unicornscan扫描</h3><p>linux下推荐  </p>
+<blockquote>
+<blockquote>
+<p>unicornscan -mU 192.168.1.100</p>
+</blockquote>
+</blockquote>
+<h3 id="ScanLine扫描"><a href="#ScanLine扫描" class="headerlink" title="ScanLine扫描"></a>ScanLine扫描</h3><p>win下推荐  </p>
+<h2 id="基于ARP-效果好"><a href="#基于ARP-效果好" class="headerlink" title="基于ARP(效果好)"></a>基于ARP(效果好)</h2><h3 id="简介-1"><a href="#简介-1" class="headerlink" title="简介"></a>简介</h3><p>ARP,通过解析网路层地址来找寻数据链路层地址的一个在网络协议包中极其重要的网络传输 协议。根据IP地址获取物理地址的一个TCP/IP协议。主机发送信息时将包含目标IP地址的 ARP请求广播到网络上的所有主机，并接收返回消息，以此确定目标的物理地址</p>
+<h3 id="namp扫描-1"><a href="#namp扫描-1" class="headerlink" title="namp扫描"></a>namp扫描</h3><p>信息精准,速度快(推荐)</p>
+<blockquote>
+<blockquote>
+<p>nmap -sn -PR 192.168.1.1/24</p>
+</blockquote>
+</blockquote>
+<h3 id="msf扫描-1"><a href="#msf扫描-1" class="headerlink" title="msf扫描"></a>msf扫描</h3><blockquote>
+<blockquote>
+<p>msf&gt;use auxiliary/scanner/discovery/arp_sweep</p>
+</blockquote>
+</blockquote>
+<h3 id="netdiscover"><a href="#netdiscover" class="headerlink" title="netdiscover"></a>netdiscover</h3><blockquote>
+<blockquote>
+<p>root@John:~# netdiscover -r 192.168.1.0/24 -i wlan0</p>
+</blockquote>
+</blockquote>
+<p>效果较好</p>
+<h3 id="arp-scan-linux"><a href="#arp-scan-linux" class="headerlink" title="arp-scan(linux)"></a>arp-scan(linux)</h3><p>速度快,信息较准确  </p>
+<blockquote>
+<blockquote>
+<p>arp-scan –loaclnet</p>
+</blockquote>
+</blockquote>
+<h3 id="powershell"><a href="#powershell" class="headerlink" title="powershell"></a>powershell</h3><blockquote>
+<blockquote>
+<p>c:\tmp&gt;powershell.exe -exec bypass -Command “Import-Module  .\arpscan.ps1;InvokeARPScan -CIDR 192.168.1.0/24”</p>
+</blockquote>
+</blockquote>
+<h2 id="基于netbios"><a href="#基于netbios" class="headerlink" title="基于netbios"></a>基于netbios</h2><h3 id="简介-2"><a href="#简介-2" class="headerlink" title="简介"></a>简介</h3><p>IBM公司开发，主要用于数十台计算机的小型局域网。该协议是一种在局域网上的程序可以 使用的应用程序编程接口（API），为程序提供了请求低级服务的同一的命令集，作用是为 了给局域网提供网络以及其他特殊功能。 系统可以利用WINS服务、广播及Lmhost文件等多种模式将NetBIOS名-——特指基于 NETBIOS协议获得计算机名称——解析为相应IP地址，实现信息通讯，所以在局域网内部使 用NetBIOS协议可以方便地实现消息通信及资源的共享。</p>
+<h3 id="nmap扫描"><a href="#nmap扫描" class="headerlink" title="nmap扫描"></a>nmap扫描</h3><p>准确</p>
+<blockquote>
+<blockquote>
+<p>root@John:~# nmap -sU –script nbstat.nse -p137 192.168.1.0/24 -T4</p>
+</blockquote>
+</blockquote>
+<h3 id="msf扫描-2"><a href="#msf扫描-2" class="headerlink" title="msf扫描"></a>msf扫描</h3><p>不准确</p>
+<blockquote>
+<blockquote>
+<p>msf &gt; use auxiliary/scanner/netbios/nbname</p>
+</blockquote>
+</blockquote>
+<h3 id="nbtscan扫描"><a href="#nbtscan扫描" class="headerlink" title="nbtscan扫描"></a>nbtscan扫描</h3><p>不准确</p>
+<blockquote>
+<blockquote>
+<p>nbtscan -r 192.168.1.0/24<br>nbtscan -v -s: 192.168.1.0/24</p>
+</blockquote>
+</blockquote>
+<h2 id="基于SNMP"><a href="#基于SNMP" class="headerlink" title="基于SNMP"></a>基于SNMP</h2><h3 id="简介-3"><a href="#简介-3" class="headerlink" title="简介"></a>简介</h3><p>SNMP是一种简单网络管理协议，它属于TCP/IP五层协议中的应用层协议，用于网络管理的 协议。SNMP主要用于网络设备的管理。SNMP协议主要由两大部分构成：SNMP管理站和 SNMP代理。SNMP管理站是一个中心节点，负责收集维护各个SNMP元素的信息，并对这 些信息进行处理，最后反馈给网络管理员；而SNMP代理是运行在各个被管理的网络节点之 上，负责统计该节点的各项信息，并且负责与SNMP管理站交互，接收并执行管理站的命 令，上传各种本地的网络信息。</p>
+<h3 id="namp扫描-2"><a href="#namp扫描-2" class="headerlink" title="namp扫描"></a>namp扫描</h3><p>垃圾</p>
+<blockquote>
+<blockquote>
+<p>nmap -sU –script snmp-brute 192.168.1.0/24 -T4</p>
+</blockquote>
+</blockquote>
+<h3 id="msf扫描-3"><a href="#msf扫描-3" class="headerlink" title="msf扫描"></a>msf扫描</h3><blockquote>
+<blockquote>
+<p>msf &gt; use auxiliary/scanner/snmp/snmp_enum</p>
+</blockquote>
+</blockquote>
+<h2 id="基于ICMP"><a href="#基于ICMP" class="headerlink" title="基于ICMP"></a>基于ICMP</h2><h3 id="简介-4"><a href="#简介-4" class="headerlink" title="简介"></a>简介</h3><p>它是TCP/IP协议族的一个子协议，用于在IP主机、路由器之间传递控制消息。控制消息是指 网络通不通、主机是否可达、路由是否可用等网络本身的消息。这些控制消息虽然并不传输 用户数据，但是对于用户数据的传递起着重要的作用</p>
+<h3 id="nmap扫描-1"><a href="#nmap扫描-1" class="headerlink" title="nmap扫描"></a>nmap扫描</h3><p>fail????</p>
+<blockquote>
+<blockquote>
+<p>nmap ‐sP ‐PI 192.168.1.0/24 ‐T4<br>nmap ‐sn ‐PE ‐T4 192.168.1.0/24</p>
+</blockquote>
+</blockquote>
+<h2 id="基于SMB"><a href="#基于SMB" class="headerlink" title="基于SMB"></a>基于SMB</h2><h3 id="msf扫描-4"><a href="#msf扫描-4" class="headerlink" title="msf扫描"></a>msf扫描</h3><blockquote>
+<blockquote>
+<p>scanner/smb/smb_version</p>
+</blockquote>
+</blockquote>
+<h2 id="基于msf"><a href="#基于msf" class="headerlink" title="基于msf"></a>基于msf</h2><p>搜索扫描器</p>
+<blockquote>
+<blockquote>
+<p>search scanner type:auxiliary</p>
+</blockquote>
+</blockquote>
+<ul>
+<li>auxiliary/scanner/discovery/arp_sweep</li>
+<li>auxiliary/scanner/discovery/udp_sweep</li>
+<li>auxiliary/scanner/ftp/ftp_version</li>
+<li>auxiliary/scanner/http/http_version</li>
+<li>auxiliary/scanner/smb/smb_version</li>
+</ul>
+<ul>
+<li>auxiliary/scanner/ssh/ssh_version</li>
+<li>auxiliary/scanner/telnet/telnet_version</li>
+<li>auxiliary/scanner/discovery/udp_probe</li>
+<li>auxiliary/scanner/dns/dns_amp</li>
+<li>auxiliary/scanner/mysql/mysql_version</li>
+</ul>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/metasploit/" rel="tag"># metasploit</a>
+          
+            <a href="/tags/内网渗透/" rel="tag"># 内网渗透</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/10/03/渗透测试笔记2-MSF常用模块记录/" rel="next" title="渗透测试笔记2-MSF常用模块记录">
+                <i class="fa fa-chevron-left"></i> 渗透测试笔记2-MSF常用模块记录
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/10/03/渗透测试笔记4-msfvenom命令记录/" rel="prev" title="渗透测试笔记4-msfvenom命令记录">
+                渗透测试笔记4-msfvenom命令记录 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/avatar.png" alt="tusk1">
+            
+              <p class="site-author-name" itemprop="name">tusk1</p>
+              <p class="site-description motion-element" itemprop="description">奋斗、寻觅，而不屈服</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">22</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">3</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">9</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="tencent://AddContact/?fromId=45&fromSubId=1&subcmd=all&uin=1592129863&website=www.oicqzone.com" target="_blank" title="QQ">
+                      
+                        <i class="fa fa-fw fa-globe"></i>QQ</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:tusk1@foxmail.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#基于UDP"><span class="nav-number">1.</span> <span class="nav-text">基于UDP</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#简介"><span class="nav-number">1.1.</span> <span class="nav-text">简介</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#namp扫描"><span class="nav-number">1.2.</span> <span class="nav-text">namp扫描</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#msf扫描"><span class="nav-number">1.3.</span> <span class="nav-text">msf扫描</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#unicornscan扫描"><span class="nav-number">1.4.</span> <span class="nav-text">unicornscan扫描</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ScanLine扫描"><span class="nav-number">1.5.</span> <span class="nav-text">ScanLine扫描</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#基于ARP-效果好"><span class="nav-number">2.</span> <span class="nav-text">基于ARP(效果好)</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#简介-1"><span class="nav-number">2.1.</span> <span class="nav-text">简介</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#namp扫描-1"><span class="nav-number">2.2.</span> <span class="nav-text">namp扫描</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#msf扫描-1"><span class="nav-number">2.3.</span> <span class="nav-text">msf扫描</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#netdiscover"><span class="nav-number">2.4.</span> <span class="nav-text">netdiscover</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#arp-scan-linux"><span class="nav-number">2.5.</span> <span class="nav-text">arp-scan(linux)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#powershell"><span class="nav-number">2.6.</span> <span class="nav-text">powershell</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#基于netbios"><span class="nav-number">3.</span> <span class="nav-text">基于netbios</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#简介-2"><span class="nav-number">3.1.</span> <span class="nav-text">简介</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#nmap扫描"><span class="nav-number">3.2.</span> <span class="nav-text">nmap扫描</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#msf扫描-2"><span class="nav-number">3.3.</span> <span class="nav-text">msf扫描</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#nbtscan扫描"><span class="nav-number">3.4.</span> <span class="nav-text">nbtscan扫描</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#基于SNMP"><span class="nav-number">4.</span> <span class="nav-text">基于SNMP</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#简介-3"><span class="nav-number">4.1.</span> <span class="nav-text">简介</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#namp扫描-2"><span class="nav-number">4.2.</span> <span class="nav-text">namp扫描</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#msf扫描-3"><span class="nav-number">4.3.</span> <span class="nav-text">msf扫描</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#基于ICMP"><span class="nav-number">5.</span> <span class="nav-text">基于ICMP</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#简介-4"><span class="nav-number">5.1.</span> <span class="nav-text">简介</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#nmap扫描-1"><span class="nav-number">5.2.</span> <span class="nav-text">nmap扫描</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#基于SMB"><span class="nav-number">6.</span> <span class="nav-text">基于SMB</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#msf扫描-4"><span class="nav-number">6.1.</span> <span class="nav-text">msf扫描</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#基于msf"><span class="nav-number">7.</span> <span class="nav-text">基于msf</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2018 &mdash; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">tusk1</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

